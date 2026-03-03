@@ -60,7 +60,7 @@
   .rating {
     font-size: 20px;
     font-weight: 900;
-    color: #e4a630;
+    color: #aaaaaa; /* overridden dynamically by JS tier logic */
     letter-spacing: 1px;
   }
 
@@ -80,7 +80,6 @@
     display: block;
     text-align: right;
     margin-bottom: 1px;
-    color: #ffffff;
     font-family: 'Barlow', sans-serif;
   }
 
@@ -284,8 +283,21 @@ function render(data) {
   // Rating (Premier)
   const ratingEl = document.getElementById('rating');
   const premierGroup = document.getElementById('premier-group');
+
+  function getPremierColor(rating) {
+    if (rating >= 30000) return '#e4a630'; // Yellow    (30k+)
+    if (rating >= 25000) return '#e03030'; // Red       (25k–30k)
+    if (rating >= 20000) return '#e0308a'; // Pink      (20k–25k)
+    if (rating >= 15000) return '#9b30e0'; // Purple    (15k–20k)
+    if (rating >= 10000) return '#3060e0'; // Blue      (10k–15k)
+    if (rating >=  5000) return '#60b8e0'; // Light Blue (5k–10k)
+    return '#aaaaaa';                       // Gray      (0–5k)
+  }
+
   if (data.rating) {
-    ratingEl.textContent = Number(data.rating).toLocaleString();
+    const r = Number(data.rating);
+    ratingEl.textContent = r.toLocaleString();
+    ratingEl.style.color = getPremierColor(r);
     premierGroup.style.display = '';
   } else {
     premierGroup.style.display = 'none';
@@ -294,8 +306,23 @@ function render(data) {
   // Faceit ELO
   const faceitEl = document.getElementById('faceit-elo');
   const faceitGroup = document.getElementById('faceit-group');
+  function getFaceitColor(elo) {
+    if (elo >= 2001) return '#e03030'; // Red       - Level 10
+    if (elo >= 1751) return '#e06020'; // Dark Orange - Level 9
+    if (elo >= 1531) return '#e07820'; // Orange    - Level 8
+    if (elo >= 1351) return '#e09020'; // Orange    - Level 7
+    if (elo >= 1201) return '#e0b030'; // Amber     - Level 6
+    if (elo >= 1051) return '#e0c830'; // Yellow-Orange - Level 5
+    if (elo >=  901) return '#d4e030'; // Yellow    - Level 4
+    if (elo >=  751) return '#c8d820'; // Yellow    - Level 3
+    if (elo >=  501) return '#c8d820'; // Yellow    - Level 2
+    return '#c8d820';                  // Yellow    - Level 1
+  }
+
   if (data.faceitElo) {
-    faceitEl.textContent = Number(data.faceitElo).toLocaleString();
+    const fe = Number(data.faceitElo);
+    faceitEl.textContent = fe.toLocaleString();
+    faceitEl.style.color = getFaceitColor(fe);
     faceitGroup.style.display = '';
   } else {
     faceitGroup.style.display = 'none';
