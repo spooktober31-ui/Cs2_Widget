@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: cs2-widget
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 3000
+      - key: NODE_ENV
+        value: production

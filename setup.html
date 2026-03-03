@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CS2 Widget Setup</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #0a0a0f;
+      color: #fff;
+      font-family: 'Barlow', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    .card {
+      background: #12121c;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-top: 3px solid #e4a630;
+      border-radius: 8px;
+      padding: 40px 48px;
+      max-width: 520px;
+      width: 100%;
+    }
+
+    .logo {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: rgba(255,255,255,0.3);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    h1 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 32px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    h1 span { color: #e4a630; }
+
+    .subtitle {
+      font-size: 13px;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 36px;
+      line-height: 1.5;
+    }
+
+    .section-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: rgba(255,255,255,0.3);
+      text-transform: uppercase;
+      margin-bottom: 14px;
+      margin-top: 28px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .field {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.55);
+      margin-bottom: 6px;
+      letter-spacing: 0.5px;
+    }
+
+    label .req { color: #e4a630; margin-left: 2px; }
+    label .opt { color: rgba(255,255,255,0.25); font-weight: 400; margin-left: 4px; }
+
+    input {
+      width: 100%;
+      background: #0a0a0f;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 4px;
+      padding: 10px 14px;
+      color: #fff;
+      font-family: 'Barlow', sans-serif;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    input:focus {
+      border-color: #e4a630;
+    }
+
+    input::placeholder {
+      color: rgba(255,255,255,0.2);
+    }
+
+    .submit-btn {
+      margin-top: 28px;
+      width: 100%;
+      background: #e4a630;
+      color: #0a0a0f;
+      border: none;
+      border-radius: 4px;
+      padding: 14px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 18px;
+      letter-spacing: 2px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .submit-btn:hover { background: #f0b840; }
+    .submit-btn:active { background: #c8911e; }
+
+    .security-note {
+      margin-top: 20px;
+      padding: 12px 16px;
+      background: rgba(93,222,139,0.05);
+      border: 1px solid rgba(93,222,139,0.12);
+      border-radius: 6px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.4);
+      line-height: 1.6;
+    }
+
+    .security-note strong { color: #5dde8b; }
+
+    .divider {
+      border: none;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      margin: 8px 0 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">CS2 Stream Widget</div>
+    <h1>SETUP YOUR <span>WIDGET</span></h1>
+    <p class="subtitle">Enter your credentials below. Your keys are never stored — they live in memory only and expire after 6 hours of inactivity.</p>
+
+    <form method="POST" action="/setup">
+
+      <div class="section-label">Leetify / Steam — Required</div>
+
+      <div class="field">
+        <label>Steam64 ID <span class="req">*</span></label>
+        <input type="text" name="steamId" placeholder="e.g. 76561198XXXXXXXXX" required autocomplete="off">
+      </div>
+
+      <div class="field">
+        <label>Leetify API Key <span class="req">*</span></label>
+        <input type="password" name="leetifyKey" placeholder="Your Leetify API key" required autocomplete="off">
+      </div>
+
+      <div class="field">
+        <label>Display Name <span class="opt">(optional — auto-detected from Leetify)</span></label>
+        <input type="text" name="playerName" placeholder="e.g. DREAMLIVE" autocomplete="off">
+      </div>
+
+      <div class="section-label">Faceit — Optional</div>
+
+      <div class="field">
+        <label>Faceit Username <span class="opt">(optional)</span></label>
+        <input type="text" name="faceitUsername" placeholder="Your Faceit username" autocomplete="off">
+      </div>
+
+      <div class="field">
+        <label>Faceit API Key <span class="opt">(optional)</span></label>
+        <input type="password" name="faceitKey" placeholder="Your Faceit API key" autocomplete="off">
+      </div>
+
+      <button type="submit" class="submit-btn">GENERATE WIDGET URL</button>
+    </form>
+
+    <div class="security-note">
+      <strong>🔒 Privacy first:</strong> Keys are stored only in server RAM for your session. No database, no logs, no third-party storage. If the server restarts, simply come back here and set up again.
+    </div>
+  </div>
+</body>
+</html>

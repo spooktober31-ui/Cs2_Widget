@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CS2 Widget</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: transparent;
+    font-family: 'Barlow Condensed', sans-serif;
+    overflow: hidden;
+  }
+
+  .widget {
+    background: linear-gradient(135deg, rgba(10,10,15,0.96) 0%, rgba(18,18,28,0.96) 100%);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-top: 2px solid #e4a630;
+    border-radius: 4px;
+    padding: 14px 18px 12px;
+    min-width: 380px;
+    max-width: 480px;
+    position: relative;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.04);
+  }
+
+  /* subtle noise overlay */
+  .widget::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect width='1' height='1' fill='rgba(255,255,255,0.012)'/%3E%3C/svg%3E");
+    pointer-events: none;
+    border-radius: 4px;
+  }
+
+  /* ── Top row ── */
+  .top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .player-name {
+    font-size: 22px;
+    font-weight: 900;
+    color: #ffffff;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .right-block {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .rating {
+    font-size: 20px;
+    font-weight: 900;
+    color: #e4a630;
+    letter-spacing: 1px;
+  }
+
+  .faceit-elo {
+    font-size: 20px;
+    font-weight: 900;
+    color: #FF5500;
+    letter-spacing: 1px;
+  }
+
+  .elo-label {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    opacity: 0.5;
+    display: block;
+    text-align: right;
+    margin-bottom: 1px;
+    font-family: 'Barlow', sans-serif;
+  }
+
+  .elo-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  .elo-row {
+    display: flex;
+    gap: 14px;
+    align-items: flex-end;
+  }
+
+  .status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #555;
+    flex-shrink: 0;
+    transition: background 0.3s;
+  }
+  .status-dot.ok    { background: #5dde8b; box-shadow: 0 0 6px rgba(93,222,139,0.5); }
+  .status-dot.error { background: #e05555; }
+
+  /* ── Divider ── */
+  .divider {
+    height: 1px;
+    background: rgba(255,255,255,0.07);
+    margin-bottom: 10px;
+  }
+
+  /* ── Results row ── */
+  .results {
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
+    align-items: center;
+    flex-wrap: nowrap;
+  }
+
+  #badges {
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
+    align-items: center;
+  }
+
+  /* Leetify attribution (required by their dev guidelines) */
+  .attribution {
+    font-size: 9px;
+    color: rgba(255,255,255,0.2);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-left: auto;
+    font-family: 'Barlow', sans-serif;
+    align-self: flex-end;
+  }
+  .attribution a {
+    color: #F84982;
+    text-decoration: none;
+  }
+
+  /* ── W/L/D badges ── */
+  .badge {
+    width: 30px;
+    height: 30px;
+    border-radius: 3px;
+    font-size: 15px;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    cursor: default;
+    transition: transform 0.15s;
+  }
+  .badge:hover { transform: scale(1.1); }
+
+  .badge.W {
+    background: linear-gradient(135deg, #1a4d2e, #2d7a4a);
+    color: #5dde8b;
+    border: 1px solid rgba(93,222,139,0.25);
+    box-shadow: 0 0 8px rgba(93,222,139,0.15);
+  }
+  .badge.L {
+    background: linear-gradient(135deg, #4d1a1a, #7a2d2d);
+    color: #e05555;
+    border: 1px solid rgba(224,85,85,0.25);
+    box-shadow: 0 0 8px rgba(224,85,85,0.15);
+  }
+  .badge.D {
+    background: linear-gradient(135deg, #3a3a1a, #5a5a2d);
+    color: #e0c555;
+    border: 1px solid rgba(224,197,85,0.25);
+  }
+  .badge.unknown {
+    background: rgba(255,255,255,0.05);
+    color: rgba(255,255,255,0.25);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+
+  /* tooltip */
+  .badge[data-tip]:hover::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.92);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 400;
+    font-family: 'Barlow', sans-serif;
+    padding: 4px 8px;
+    border-radius: 3px;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 10;
+    letter-spacing: 0.5px;
+  }
+
+  .no-data {
+    color: rgba(255,255,255,0.2);
+    font-size: 13px;
+    font-style: italic;
+    letter-spacing: 0.5px;
+  }
+
+  /* platform symbol in badge corner */
+  .badge .platform-sym {
+    position: absolute;
+    bottom: -4px;
+    right: -4px;
+    font-size: 7px;
+    font-weight: 900;
+    line-height: 1;
+    pointer-events: none;
+    opacity: 1;
+    font-family: 'Barlow', sans-serif;
+    letter-spacing: 0;
+  }
+  .badge .platform-sym { display: flex; align-items: center; justify-content: center; }
+  .badge .platform-sym svg { width: 10px; height: 10px; opacity: 1; }
+
+  @keyframes pop {
+    from { opacity: 0; transform: scale(0.7); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+  .badge { animation: pop 0.25s ease forwards; }
+</style>
+</head>
+<body>
+<div class="widget">
+  <div class="top-row">
+    <div class="player-name" id="player-name">CS2 Widget</div>
+    <div class="right-block">
+      <div class="elo-row">
+        <div class="elo-group" id="premier-group" style="display:none">
+          <span class="elo-label">Premier</span>
+          <div class="rating" id="rating"></div>
+        </div>
+        <div class="elo-group" id="faceit-group" style="display:none">
+          <span class="elo-label">Faceit</span>
+          <div class="faceit-elo" id="faceit-elo"></div>
+        </div>
+      </div>
+      <div class="status-dot" id="status-dot" title="Leetify connection"></div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="results">
+    <div id="badges"><span class="no-data">Fetching matches...</span></div>
+    <div class="attribution"><a href="https://leetify.com" target="_blank">Data by Leetify</a></div>
+  </div>
+</div>
+
+<script>
+const token   = new URLSearchParams(window.location.search).get('token') || '';
+const API     = `/api/matches?token=${token}`;
+const REFRESH = 15000;
+
+async function refresh() {
+  try {
+    const res  = await fetch(API);
+    const data = await res.json();
+    render(data);
+  } catch {
+    document.getElementById('status-dot').className = 'status-dot error';
+    document.getElementById('status-dot').title = 'Backend not running';
+  }
+}
+
+function render(data) {
+  // Player name
+  document.getElementById('player-name').textContent = (data.playerName || 'CS2 PLAYER').toUpperCase();
+
+  // Rating (Premier)
+  const ratingEl = document.getElementById('rating');
+  const premierGroup = document.getElementById('premier-group');
+  if (data.rating) {
+    ratingEl.textContent = Number(data.rating).toLocaleString();
+    premierGroup.style.display = '';
+  } else {
+    premierGroup.style.display = 'none';
+  }
+
+  // Faceit ELO
+  const faceitEl = document.getElementById('faceit-elo');
+  const faceitGroup = document.getElementById('faceit-group');
+  if (data.faceitElo) {
+    faceitEl.textContent = Number(data.faceitElo).toLocaleString();
+    faceitGroup.style.display = '';
+  } else {
+    faceitGroup.style.display = 'none';
+  }
+
+  // Status dot
+  const dot = document.getElementById('status-dot');
+  dot.className = 'status-dot ' + (data.status === 'ok' ? 'ok' : data.status === 'error' ? 'error' : '');
+  dot.title = data.error || (data.status === 'ok' ? 'Leetify connected' : 'Connecting...');
+
+  // Badges
+  const container = document.getElementById('badges');
+  const matches   = (data.matches || []).slice(0, 8).reverse();
+
+  if (!matches.length) {
+    container.innerHTML = '<span class="no-data">No matches yet...</span>';
+    return;
+  }
+
+  container.innerHTML = matches.map(m => {
+    const cls  = ['W','L','D'].includes(m.result) ? m.result : 'unknown';
+    const parts = [];
+    if (m.score && m.score !== '?:?') parts.push(m.score);
+    if (m.map)   parts.push(m.map);
+    const tip  = parts.join(' · ');
+    const isFaceit = m.platform === 'faceit';
+    // Faceit: angular arrow logo | Premier: CS2 blue badge icon
+    const sym  = isFaceit
+      ? `<span class="platform-sym"><svg viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg"><polygon points="4,20 32,4 52,28 32,52 26,34 12,40" fill="#FF5500"/></svg></span>`
+      : `<span class="platform-sym"><svg viewBox="0 0 40 44" xmlns="http://www.w3.org/2000/svg"><g transform="rotate(-8,20,22)"><rect x="6" y="2" width="28" height="36" rx="2" fill="#4B6FD4"/><rect x="2" y="2" width="5" height="36" rx="1" fill="#F5C518"/><g fill="white" transform="translate(12,6)"><rect x="4" y="0" width="9" height="2.5"/><rect x="1" y="3" width="2.5" height="10"/><rect x="4" y="3" width="6" height="2.5"/><rect x="11" y="3" width="5" height="10"/><rect x="4" y="12" width="7" height="3.5"/></g></g></svg></span>`;
+    return `<div class="badge ${cls}" data-tip="${tip}">${m.result}${sym}</div>`;
+  }).join('');
+}
+
+refresh();
+setInterval(refresh, REFRESH);
+</script>
+</body>
+</html>
