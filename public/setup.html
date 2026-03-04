@@ -282,7 +282,7 @@ function updatePreview() {
   const rgb = hexToRgb(c.bgColor);
   const bg  = `linear-gradient(135deg,rgba(${rgb},${c.bgOpacity}) 0%,rgba(${rgb},${Math.min(c.bgOpacity+0.04,1)}) 100%)`;
   const borderStyle = c.showBorder
-    ? `border:1px solid rgba(255,255,255,0.07);border-top:2px solid ${c.accentColor}`
+    ? `border-left:1px solid rgba(255,255,255,0.12);border-right:1px solid rgba(255,255,255,0.12);border-bottom:1px solid rgba(255,255,255,0.12);border-top:2px solid ${c.accentColor}`
     : 'border:none';
 
   const data = liveData || {

@@ -12,6 +12,10 @@
     border-radius: 4px;
     padding: 14px 18px 12px;
     position: relative;
+    border-top: 2px solid #e4a630;
+    border-left: 1px solid rgba(255,255,255,0.12);
+    border-right: 1px solid rgba(255,255,255,0.12);
+    border-bottom: 1px solid rgba(255,255,255,0.12);
     box-shadow: 0 4px 16px rgba(0,0,0,0.5);
   }
   .widget::before {
@@ -137,10 +141,12 @@ function applyLayout() {
   widget.style.background = `linear-gradient(135deg,rgba(${rgb},${op}) 0%,rgba(${rgb},${Math.min(op+0.04,1)}) 100%)`;
 
   if (S.showBorder !== false) {
-    widget.style.border    = '1px solid rgba(255,255,255,0.07)';
-    widget.style.borderTop = `2px solid ${S.accentColor || '#e4a630'}`;
+    widget.style.borderTop    = `2px solid ${S.accentColor || '#e4a630'}`;
+    widget.style.borderLeft   = '1px solid rgba(255,255,255,0.12)';
+    widget.style.borderRight  = '1px solid rgba(255,255,255,0.12)';
+    widget.style.borderBottom = '1px solid rgba(255,255,255,0.12)';
   } else {
-    widget.style.border = 'none';
+    widget.style.borderTop = widget.style.borderLeft = widget.style.borderRight = widget.style.borderBottom = 'none';
   }
 
   // Font
