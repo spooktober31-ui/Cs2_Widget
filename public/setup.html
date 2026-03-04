@@ -371,7 +371,7 @@ function updatePreview() {
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;600&family=Rajdhani:wght@400;600;700&family=Oswald:wght@400;600;700&family=Bebas+Neue&family=Exo+2:wght@400;700;900&display=swap" rel="stylesheet">
     <style>*{margin:0;padding:0;box-sizing:border-box}body{background:transparent;overflow:hidden}</style>
     </head><body>
-    <div style="${borderStyle};background:${bg};border-radius:4px;padding:14px 18px 12px;box-shadow:0 8px 32px rgba(0,0,0,0.7);width:${c.widgetWidth}px;display:inline-block;overflow:hidden">
+    <div style="${borderStyle};background:${bg};border-radius:4px;padding:14px 18px ${!c.showName?"18px":"12px"};box-shadow:0 8px 32px rgba(0,0,0,0.7);width:${c.widgetWidth}px;display:inline-block">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:${c.showName?'10':'0'}px;gap:10px">
         ${topRowContent}
       </div>

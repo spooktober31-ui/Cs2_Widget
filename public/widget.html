@@ -12,7 +12,6 @@
     border-radius: 4px;
     padding: 14px 18px 12px;
     position: relative;
-    overflow: hidden;
     box-shadow: 0 8px 32px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.04);
   }
   .widget::before {
@@ -163,13 +162,13 @@ function applyLayout() {
     resultsRow.style.display   = 'none';
     badgesInline.style.display = 'flex';
     divider.style.display      = 'none';
-    // In no-name mode, top-row is: [badges-inline] [elo+dot]
-    // When flipped: [elo+dot] [badges-inline] — row-reverse handles this naturally
+    widget.style.paddingBottom = '18px'; // extra room for platform symbol overhang
     document.getElementById('top-row').style.justifyContent = 'space-between';
   } else {
     nameEl.style.display       = '';
     resultsRow.style.display   = '';
     badgesInline.style.display = 'none';
+    widget.style.paddingBottom = '12px';
     divider.style.display      = S.showDivider === false ? 'none' : '';
     document.getElementById('top-row').style.justifyContent = 'space-between';
   }
