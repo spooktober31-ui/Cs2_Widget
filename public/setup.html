@@ -4,191 +4,459 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CS2 Widget Setup</title>
-  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;600&family=Rajdhani:wght@400;600;700&family=Oswald:wght@400;600;700&family=Bebas+Neue&family=Exo+2:wght@400;700;900&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      background: #0a0a0f;
-      color: #fff;
-      font-family: 'Barlow', sans-serif;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 24px;
-    }
-
-    .card {
-      background: #12121c;
-      border: 1px solid rgba(255,255,255,0.08);
-      border-top: 3px solid #e4a630;
-      border-radius: 8px;
-      padding: 40px 48px;
-      max-width: 520px;
-      width: 100%;
-    }
-
-    .logo {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 3px;
-      color: rgba(255,255,255,0.3);
-      text-transform: uppercase;
-      margin-bottom: 6px;
-    }
-
-    h1 {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 32px;
-      font-weight: 900;
-      letter-spacing: 2px;
-      color: #fff;
-      margin-bottom: 4px;
-    }
-
-    h1 span { color: #e4a630; }
-
-    .subtitle {
-      font-size: 13px;
-      color: rgba(255,255,255,0.4);
-      margin-bottom: 36px;
-      line-height: 1.5;
-    }
-
-    .section-label {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 2px;
-      color: rgba(255,255,255,0.3);
-      text-transform: uppercase;
-      margin-bottom: 14px;
-      margin-top: 28px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-    }
-
-    .field {
-      margin-bottom: 16px;
-    }
-
-    label {
-      display: block;
-      font-size: 12px;
-      font-weight: 600;
-      color: rgba(255,255,255,0.55);
-      margin-bottom: 6px;
-      letter-spacing: 0.5px;
-    }
-
-    label .req { color: #e4a630; margin-left: 2px; }
-    label .opt { color: rgba(255,255,255,0.25); font-weight: 400; margin-left: 4px; }
-
-    input {
-      width: 100%;
-      background: #0a0a0f;
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 4px;
-      padding: 10px 14px;
-      color: #fff;
-      font-family: 'Barlow', sans-serif;
-      font-size: 14px;
-      outline: none;
-      transition: border-color 0.15s;
-    }
-
-    input:focus {
-      border-color: #e4a630;
-    }
-
-    input::placeholder {
-      color: rgba(255,255,255,0.2);
-    }
-
-    .submit-btn {
-      margin-top: 28px;
-      width: 100%;
-      background: #e4a630;
-      color: #0a0a0f;
-      border: none;
-      border-radius: 4px;
-      padding: 14px;
-      font-family: 'Barlow Condensed', sans-serif;
-      font-weight: 900;
-      font-size: 18px;
-      letter-spacing: 2px;
-      cursor: pointer;
-      transition: background 0.15s;
-    }
-
-    .submit-btn:hover { background: #f0b840; }
-    .submit-btn:active { background: #c8911e; }
-
-    .security-note {
-      margin-top: 20px;
-      padding: 12px 16px;
-      background: rgba(93,222,139,0.05);
-      border: 1px solid rgba(93,222,139,0.12);
-      border-radius: 6px;
-      font-size: 12px;
-      color: rgba(255,255,255,0.4);
-      line-height: 1.6;
-    }
-
-    .security-note strong { color: #5dde8b; }
-
-    .divider {
-      border: none;
-      border-top: 1px solid rgba(255,255,255,0.06);
-      margin: 8px 0 0;
-    }
+    body { background: #07070d; color: #fff; font-family: 'Barlow', sans-serif; display: flex; min-height: 100vh; }
+    .left-panel { width: 560px; min-width: 560px; background: #0d0d18; border-right: 1px solid rgba(255,255,255,0.06); padding: 36px 40px; overflow-y: auto; height: 100vh; position: sticky; top: 0; }
+    .right-panel { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 40px 32px; background: #07070d; }
+    .preview-label { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 3px; color: rgba(255,255,255,0.2); text-transform: uppercase; margin-bottom: 24px; align-self: flex-start; }
+    .preview-box { width: 100%; display: flex; justify-content: center; margin-bottom: 16px; }
+    .preview-status { font-size: 12px; color: rgba(255,255,255,0.3); text-align: center; margin-top: 8px; letter-spacing: 0.5px; max-width: 420px; line-height: 1.5; }
+    .preview-status.loading { color: #e4a630; }
+    .preview-status.ok { color: #5dde8b; }
+    .preview-status.error { color: #e05555; }
+    .fetch-btn { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; padding: 8px 20px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 14px; letter-spacing: 1px; cursor: pointer; transition: all 0.15s; margin-top: 16px; }
+    .fetch-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+    .fetch-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .logo { font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:700; letter-spacing:3px; color:rgba(255,255,255,0.25); text-transform:uppercase; margin-bottom:6px; }
+    h1 { font-family:'Barlow Condensed',sans-serif; font-size:28px; font-weight:900; letter-spacing:2px; color:#fff; margin-bottom:4px; }
+    h1 span { color:#e4a630; }
+    .subtitle { font-size:12px; color:rgba(255,255,255,0.35); margin-bottom:28px; line-height:1.5; }
+    .section-label { font-family:'Barlow Condensed',sans-serif; font-size:10px; font-weight:700; letter-spacing:2px; color:rgba(255,255,255,0.25); text-transform:uppercase; margin-bottom:12px; margin-top:24px; padding-bottom:7px; border-bottom:1px solid rgba(255,255,255,0.05); }
+    .field { margin-bottom:14px; }
+    label { display:block; font-size:11px; font-weight:600; color:rgba(255,255,255,0.45); margin-bottom:5px; letter-spacing:0.4px; }
+    label .req { color:#e4a630; margin-left:2px; }
+    label .opt { color:rgba(255,255,255,0.2); font-weight:400; margin-left:4px; }
+    .help-link { font-size:10px; color:rgba(228,166,48,0.5); text-decoration:none; margin-left:6px; font-weight:400; }
+    .help-link:hover { color:#e4a630; text-decoration:underline; }
+    input[type="text"], input[type="password"], input[type="number"], select { width:100%; background:#0a0a0f; border:1px solid rgba(255,255,255,0.08); border-radius:4px; padding:9px 12px; color:#fff; font-family:'Barlow',sans-serif; font-size:13px; outline:none; transition:border-color 0.15s; }
+    select { cursor:pointer; appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='rgba(255,255,255,0.3)'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 12px center; padding-right:32px; }
+    input:focus, select:focus { border-color:#e4a630; }
+    input::placeholder { color:rgba(255,255,255,0.15); }
+    select option { background:#12121c; }
+    .two-col { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .toggle-row { display:flex; align-items:center; justify-content:space-between; padding:9px 0; border-bottom:1px solid rgba(255,255,255,0.03); }
+    .toggle-row:last-child { border-bottom:none; }
+    .toggle-label { font-size:12px; color:rgba(255,255,255,0.65); }
+    .toggle-label small { display:block; font-size:10px; color:rgba(255,255,255,0.25); margin-top:2px; }
+    .toggle { position:relative; width:36px; height:18px; flex-shrink:0; }
+    .toggle input { opacity:0; width:0; height:0; }
+    .slider { position:absolute; inset:0; background:rgba(255,255,255,0.1); border-radius:20px; cursor:pointer; transition:background 0.2s; }
+    .slider::before { content:''; position:absolute; left:3px; top:3px; width:12px; height:12px; border-radius:50%; background:#fff; transition:transform 0.2s; }
+    .toggle input:checked + .slider { background:#e4a630; }
+    .toggle input:checked + .slider::before { transform:translateX(18px); }
+    .range-row { display:flex; align-items:center; gap:10px; }
+    input[type="range"] { flex:1; padding:0; background:transparent; border:none; accent-color:#e4a630; cursor:pointer; }
+    .range-val { font-family:'Barlow Condensed',sans-serif; font-size:15px; font-weight:700; color:#e4a630; min-width:38px; text-align:right; }
+    input[type="color"] { width:34px; height:34px; padding:2px; border-radius:4px; border:1px solid rgba(255,255,255,0.1); background:#0a0a0f; cursor:pointer; }
+    .color-row { display:flex; align-items:center; gap:10px; }
+    .color-row span { font-size:11px; color:rgba(255,255,255,0.35); }
+    .submit-btn { margin-top:28px; width:100%; background:#e4a630; color:#0a0a0f; border:none; border-radius:4px; padding:13px; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:17px; letter-spacing:2px; cursor:pointer; transition:background 0.15s; }
+    .submit-btn:hover { background:#f0b840; }
+    .perm-note { margin-top:16px; padding:10px 14px; background:rgba(228,166,48,0.04); border:1px solid rgba(228,166,48,0.12); border-radius:5px; font-size:11px; color:rgba(255,255,255,0.35); line-height:1.6; }
+    .perm-note strong { color:#e4a630; }
   </style>
 </head>
 <body>
-  <div class="card">
-    <div class="logo">CS2 Stream Widget</div>
-    <h1>SETUP YOUR <span>WIDGET</span></h1>
-    <p class="subtitle">Enter your credentials below. Your keys are never stored — they live in memory only and expire after 6 hours of inactivity.</p>
+<div class="left-panel">
+  <div class="logo">CS2 Stream Widget</div>
+  <h1>SETUP YOUR <span>WIDGET</span></h1>
+  <p class="subtitle">Configure below and watch the live preview update. Your URL is permanent — bookmark it.</p>
 
-    <form method="POST" action="/setup">
+  <div class="section-label">Leetify / Steam — Required</div>
+  <div class="field">
+    <label>Steam64 ID <span class="req">*</span><a class="help-link" href="https://www.steamidfinder.com/" target="_blank">↗ How to find yours</a></label>
+    <input type="text" id="steamId" placeholder="e.g. 76561198XXXXXXXXX" autocomplete="off" oninput="updatePreview()">
+  </div>
+  <div class="field">
+    <label>Leetify API Key <span class="req">*</span><a class="help-link" href="https://leetify.com/app/settings/api" target="_blank">↗ Leetify Settings → API</a></label>
+    <input type="password" id="leetifyKey" placeholder="Your Leetify API key" autocomplete="off" oninput="updatePreview()">
+  </div>
+  <div class="field">
+    <label>Display Name <span class="opt">(optional — auto-fetched from Leetify)</span></label>
+    <input type="text" id="playerName" placeholder="e.g. DREAMLIVE" autocomplete="off" oninput="updatePreview()">
+  </div>
 
-      <div class="section-label">Leetify / Steam — Required</div>
+  <div class="section-label">Faceit — Optional</div>
+  <div class="field">
+    <label>Faceit Username <span class="opt">(optional)</span></label>
+    <input type="text" id="faceitUsername" placeholder="Your Faceit username" autocomplete="off" oninput="updatePreview()">
+  </div>
+  <div class="field">
+    <label>Faceit API Key <span class="opt">(optional)</span><a class="help-link" href="https://developers.faceit.com/apps" target="_blank">↗ Faceit Developers → Apps</a></label>
+    <input type="password" id="faceitKey" placeholder="Your Faceit API key" autocomplete="off" oninput="updatePreview()">
+  </div>
 
-      <div class="field">
-        <label>Steam64 ID <span class="req">*</span></label>
-        <input type="text" name="steamId" placeholder="e.g. 76561198XXXXXXXXX" required autocomplete="off">
-      </div>
+  <div class="section-label">Display Options</div>
+  <div class="toggle-row">
+    <div class="toggle-label">Show Player Name<small>When off, ELO moves up to fill the space</small></div>
+    <label class="toggle"><input type="checkbox" id="showName" checked onchange="updatePreview()"><span class="slider"></span></label>
+  </div>
+  <div class="toggle-row">
+    <div class="toggle-label">Show Platform Indicators<small>Gold/orange symbols on match badges</small></div>
+    <label class="toggle"><input type="checkbox" id="showPlatform" checked onchange="updatePreview()"><span class="slider"></span></label>
+  </div>
+  <div class="toggle-row">
+    <div class="toggle-label">Show Widget Border<small>Outline + top accent line</small></div>
+    <label class="toggle"><input type="checkbox" id="showBorder" checked onchange="updatePreview()"><span class="slider"></span></label>
+  </div>
+  <div class="toggle-row">
+    <div class="toggle-label">Tier Colors on ELO Numbers<small>Premier + Faceit colored by rank bracket</small></div>
+    <label class="toggle"><input type="checkbox" id="tierColors" checked onchange="updatePreview()"><span class="slider"></span></label>
+  </div>
 
-      <div class="field">
-        <label>Leetify API Key <span class="req">*</span></label>
-        <input type="password" name="leetifyKey" placeholder="Your Leetify API key" required autocomplete="off">
-      </div>
-
-      <div class="field">
-        <label>Display Name <span class="opt">(optional — auto-detected from Leetify)</span></label>
-        <input type="text" name="playerName" placeholder="e.g. DREAMLIVE" autocomplete="off">
-      </div>
-
-      <div class="section-label">Faceit — Optional</div>
-
-      <div class="field">
-        <label>Faceit Username <span class="opt">(optional)</span></label>
-        <input type="text" name="faceitUsername" placeholder="Your Faceit username" autocomplete="off">
-      </div>
-
-      <div class="field">
-        <label>Faceit API Key <span class="opt">(optional)</span></label>
-        <input type="password" name="faceitKey" placeholder="Your Faceit API key" autocomplete="off">
-      </div>
-
-      <button type="submit" class="submit-btn">GENERATE WIDGET URL</button>
-    </form>
-
-    <div class="security-note">
-      <strong>🔒 Privacy first:</strong> Keys are stored only in server RAM for your session. No database, no logs, no third-party storage. If the server restarts, simply come back here and set up again.
+  <div class="section-label">Font & Size</div>
+  <div class="two-col">
+    <div class="field">
+      <label>Font Style</label>
+      <select id="fontStyle" onchange="updatePreview()">
+        <option value="Barlow Condensed">Barlow Condensed (default)</option>
+        <option value="Rajdhani">Rajdhani</option>
+        <option value="Oswald">Oswald</option>
+        <option value="Bebas Neue">Bebas Neue</option>
+        <option value="Exo 2">Exo 2</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Font Size Scale</label>
+      <select id="fontSize" onchange="updatePreview()">
+        <option value="small">Small</option>
+        <option value="normal" selected>Normal (default)</option>
+        <option value="large">Large</option>
+      </select>
     </div>
   </div>
+  <div class="two-col">
+    <div class="field">
+      <label>Widget Width (px)</label>
+      <input type="number" id="widgetWidth" value="420" min="280" max="800" step="10" oninput="updatePreview()">
+    </div>
+    <div class="field">
+      <label>Matches to Show</label>
+      <select id="matchCount" onchange="updatePreview()">
+        <option value="5">5 matches</option>
+        <option value="6">6 matches</option>
+        <option value="7">7 matches</option>
+        <option value="8" selected>8 matches</option>
+        <option value="10">10 matches</option>
+        <option value="12">12 matches</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="section-label">Background & Colors</div>
+  <div class="field">
+    <label>Background Opacity</label>
+    <div class="range-row">
+      <input type="range" id="bgOpacity" min="0" max="100" value="96" oninput="document.getElementById('bgOpacityVal').textContent=this.value+'%';updatePreview()">
+      <div class="range-val" id="bgOpacityVal">96%</div>
+    </div>
+  </div>
+  <div class="two-col">
+    <div class="field">
+      <label>Background Color</label>
+      <div class="color-row"><input type="color" id="bgColor" value="#0a0a0f" oninput="updatePreview()"><span>Widget background</span></div>
+    </div>
+    <div class="field">
+      <label>Accent Color</label>
+      <div class="color-row"><input type="color" id="accentColor" value="#e4a630" oninput="updatePreview()"><span>Border · name · badges</span></div>
+    </div>
+  </div>
+
+  <button class="submit-btn" onclick="generate()">GENERATE WIDGET URL →</button>
+  <div class="perm-note"><strong>🔗 Persistent & Encrypted:</strong> Your credentials are AES-256 encrypted and stored permanently. Your widget link never expires. You'll also get a Settings URL to change appearance anytime.</div>
+</div>
+
+<div class="right-panel">
+  <div class="preview-label">Live Preview</div>
+  <div class="preview-box">
+    <iframe id="previewFrame" src="about:blank" style="border:none;background:transparent;overflow:hidden" width="420" height="130" scrolling="no"></iframe>
+  </div>
+  <div class="preview-status" id="previewStatus">Showing dummy data. Enter credentials and click Fetch to load real data.</div>
+  <button class="fetch-btn" id="fetchBtn" onclick="fetchLivePreview()">↻ FETCH LIVE DATA</button>
+</div>
+
+<script>
+let liveData = null;
+
+function v(id) { return document.getElementById(id); }
+
+function getConfig() {
+  return {
+    accentColor: v('accentColor').value,
+    bgColor:     v('bgColor').value,
+    bgOpacity:   parseInt(v('bgOpacity').value) / 100,
+    showBorder:  v('showBorder').checked,
+    showName:    v('showName').checked,
+    showPlatform:v('showPlatform').checked,
+    tierColors:  v('tierColors').checked,
+    fontStyle:   v('fontStyle').value,
+    fontSize:    v('fontSize').value,
+    widgetWidth: parseInt(v('widgetWidth').value) || 420,
+    matchCount:  parseInt(v('matchCount').value) || 8,
+  };
+}
+
+function getPremierColor(r, tierColors, accent) {
+  if (!tierColors) return accent;
+  if (r >= 30000) return '#e4a630';
+  if (r >= 25000) return '#e03030';
+  if (r >= 20000) return '#e0308a';
+  if (r >= 15000) return '#9b30e0';
+  if (r >= 10000) return '#3060e0';
+  if (r >=  5000) return '#60b8e0';
+  return '#aaaaaa';
+}
+function getFaceitColor(e, tierColors) {
+  if (!tierColors) return '#FF5500';
+  if (e >= 2001) return '#e03030';
+  if (e >= 1751) return '#e06020';
+  if (e >= 1531) return '#e07820';
+  if (e >= 1351) return '#e09020';
+  if (e >= 1201) return '#e0b030';
+  if (e >= 1051) return '#e0c830';
+  if (e >=  901) return '#d4e030';
+  return '#c8d820';
+}
+function hexToRgb(hex) {
+  return `${parseInt(hex.slice(1,3),16)},${parseInt(hex.slice(3,5),16)},${parseInt(hex.slice(5,7),16)}`;
+}
+
+function updatePreview() {
+  const c = getConfig();
+  const scale   = c.fontSize === 'small' ? 0.85 : c.fontSize === 'large' ? 1.18 : 1;
+  const namePx  = Math.round(22 * scale);
+  const eloPx   = Math.round(20 * scale);
+  const badgePx = Math.round(30 * scale);
+  const badgeFPx= Math.round(15 * scale);
+
+  const rgb = hexToRgb(c.bgColor);
+  const bg  = `linear-gradient(135deg,rgba(${rgb},${c.bgOpacity}) 0%,rgba(${rgb},${Math.min(c.bgOpacity+0.04,1)}) 100%)`;
+  const borderStyle = c.showBorder
+    ? `border:1px solid rgba(255,255,255,0.07);border-top:2px solid ${c.accentColor}`
+    : 'border:none';
+
+  const data = liveData || {
+    playerName: v('playerName').value.trim() || 'PLAYER NAME',
+    rating: 18450, faceitElo: null,
+    matches: [
+      {result:'W',score:'13:8', map:'MIRAGE',  platform:'leetify'},
+      {result:'L',score:'8:13', map:'INFERNO', platform:'leetify'},
+      {result:'W',score:'13:5', map:'DUST2',   platform:'leetify'},
+      {result:'D',score:'13:13',map:'NUKE',    platform:'leetify'},
+      {result:'W',score:'13:10',map:'ANCIENT', platform:'leetify'},
+      {result:'L',score:'10:13',map:'OVERPASS',platform:'leetify'},
+      {result:'W',score:'13:7', map:'VERTIGO', platform:'leetify'},
+      {result:'W',score:'13:9', map:'CACHE',   platform:'leetify'},
+    ]
+  };
+
+  const matches = data.matches.slice(0, c.matchCount);
+  const premierColor = data.rating   ? getPremierColor(Number(data.rating),   c.tierColors, c.accentColor) : '#aaaaaa';
+  const faceitColor  = data.faceitElo? getFaceitColor(Number(data.faceitElo), c.tierColors)                : '#FF5500';
+
+  const badgeStyles = {
+    W:`background:linear-gradient(135deg,#1a4d2e,#2d7a4a);color:#5dde8b;border:1px solid rgba(93,222,139,0.25);box-shadow:0 0 8px rgba(93,222,139,0.15)`,
+    L:`background:linear-gradient(135deg,#4d1a1a,#7a2d2d);color:#e05555;border:1px solid rgba(224,85,85,0.25);box-shadow:0 0 8px rgba(224,85,85,0.15)`,
+    D:`background:linear-gradient(135deg,#3a3a1a,#5a5a2d);color:#e0c555;border:1px solid rgba(224,197,85,0.25)`,
+    unknown:`background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.25);border:1px solid rgba(255,255,255,0.08)`,
+  };
+
+  const badgesHtml = matches.map(m => {
+    const cls = ['W','L','D'].includes(m.result) ? m.result : 'unknown';
+    const isFaceit = m.platform === 'faceit';
+    const sym = c.showPlatform ? (isFaceit
+      ? `<span style="position:absolute;bottom:-4px;right:-4px;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 56 56" width="10" height="10" xmlns="http://www.w3.org/2000/svg"><polygon points="4,20 32,4 52,28 32,52 26,34 12,40" fill="#FF5500"/></svg></span>`
+      : `<span style="position:absolute;bottom:-4px;right:-4px;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 40 44" width="10" height="10" xmlns="http://www.w3.org/2000/svg"><g transform="rotate(-8,20,22)"><rect x="6" y="2" width="28" height="36" rx="2" fill="#4B6FD4"/><rect x="2" y="2" width="5" height="36" rx="1" fill="#F5C518"/><g fill="white" transform="translate(12,6)"><rect x="4" y="0" width="9" height="2.5"/><rect x="1" y="3" width="2.5" height="10"/><rect x="4" y="3" width="6" height="2.5"/><rect x="11" y="3" width="5" height="10"/><rect x="4" y="12" width="7" height="3.5"/></g></g></svg></span>`) : '';
+    return `<div style="width:${badgePx}px;height:${badgePx}px;border-radius:3px;font-size:${badgeFPx}px;font-weight:900;display:flex;align-items:center;justify-content:center;position:relative;${badgeStyles[cls]};font-family:'${c.fontStyle}',sans-serif">${m.result}${sym}</div>`;
+  }).join('');
+
+  const nameHtml = c.showName
+    ? `<div style="font-size:${namePx}px;font-weight:900;color:${c.accentColor};letter-spacing:2px;text-transform:uppercase;font-family:'${c.fontStyle}',sans-serif">${(data.playerName||'PLAYER NAME').toUpperCase()}</div>`
+    : '';
+
+  const premierHtml = data.rating
+    ? `<div style="display:flex;flex-direction:column;align-items:flex-end"><span style="font-size:9px;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;opacity:0.5;display:block;text-align:right;margin-bottom:1px;font-family:'Barlow',sans-serif">Premier</span><div style="font-size:${eloPx}px;font-weight:900;color:${premierColor};letter-spacing:1px;font-family:'${c.fontStyle}',sans-serif">${Number(data.rating).toLocaleString()}</div></div>` : '';
+
+  const faceitHtml = data.faceitElo
+    ? `<div style="display:flex;flex-direction:column;align-items:flex-end"><span style="font-size:9px;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;opacity:0.5;display:block;text-align:right;margin-bottom:1px;font-family:'Barlow',sans-serif">Faceit</span><div style="font-size:${eloPx}px;font-weight:900;color:${faceitColor};letter-spacing:1px;font-family:'${c.fontStyle}',sans-serif">${Number(data.faceitElo).toLocaleString()}</div></div>` : '';
+
+  const frameH = c.fontSize === 'large' ? 145 : c.fontSize === 'small' ? 115 : 130;
+
+  const html = `<!DOCTYPE html><html><head>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;600&family=Rajdhani:wght@400;600;700&family=Oswald:wght@400;600;700&family=Bebas+Neue&family=Exo+2:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>*{margin:0;padding:0;box-sizing:border-box}body{background:transparent;overflow:hidden}</style>
+    </head><body>
+    <div style="border-radius:4px;padding:14px 18px 12px;position:relative;box-shadow:0 8px 32px rgba(0,0,0,0.7);${borderStyle};background:${bg};width:${c.widgetWidth}px">
+      <div style="display:flex;align-items:center;justify-content:${c.showName?'space-between':'flex-end'};margin-bottom:10px">
+        ${nameHtml}
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="display:flex;gap:14px;align-items:flex-end">${premierHtml}${faceitHtml}</div>
+          <div style="width:7px;height:7px;border-radius:50%;background:${liveData?'#5dde8b':'#555'};box-shadow:${liveData?'0 0 6px rgba(93,222,139,0.5)':'none'}"></div>
+        </div>
+      </div>
+      <div style="height:1px;background:rgba(255,255,255,0.07);margin-bottom:10px"></div>
+      <div style="display:flex;flex-direction:row;gap:4px;align-items:center;flex-wrap:nowrap">
+        <div style="display:flex;gap:4px;align-items:center">${badgesHtml}</div>
+        <div style="font-size:9px;color:rgba(255,255,255,0.2);letter-spacing:0.5px;text-transform:uppercase;margin-left:auto;font-family:'Barlow',sans-serif"><a href="https://leetify.com" style="color:${c.accentColor};text-decoration:none">Data by Leetify</a></div>
+      </div>
+    </div></body></html>`;
+
+  const frame = v('previewFrame');
+  frame.style.width  = c.widgetWidth + 'px';
+  frame.style.height = frameH + 'px';
+  const doc = frame.contentDocument || frame.contentWindow.document;
+  doc.open(); doc.write(html); doc.close();
+}
+
+async function fetchLivePreview() {
+  const steamId    = v('steamId').value.trim();
+  const leetifyKey = v('leetifyKey').value.trim();
+  const faceitUser = v('faceitUsername').value.trim();
+  const faceitKey  = v('faceitKey').value.trim();
+  const matchCount = parseInt(v('matchCount').value) || 8;
+
+  if (!steamId || !leetifyKey) { setStatus('error','⚠ Steam64 ID and Leetify API Key are required.'); return; }
+
+  const btn = v('fetchBtn');
+  btn.textContent = '⏳ Fetching...'; btn.disabled = true;
+  setStatus('loading','Calling Leetify API...');
+
+  try {
+    const res = await fetch(`https://api-public.cs-prod.leetify.com/v3/profile?steam64_id=${steamId}`,
+      { headers: { '_leetify_key': leetifyKey, 'Accept': 'application/json' } });
+    if (!res.ok) throw new Error(`Leetify returned ${res.status}`);
+    const profile = await res.json();
+
+    const playerName = profile.name || v('playerName').value.trim() || 'CS2 PLAYER';
+    const rating     = (profile.ranks && profile.ranks.premier) || null;
+    const rawMatches = (profile.recent_matches || []).slice(0, matchCount+4).map(m => ({
+      result: m.outcome === 'win' ? 'W' : m.outcome === 'loss' ? 'L' : 'D',
+      score:  Array.isArray(m.score) && m.score.length===2 ? `${m.score[0]}:${m.score[1]}` : '?:?',
+      map:    (m.map_name||'').replace(/^de_/i,'').toUpperCase(),
+      platform: 'leetify', timestamp: m.finished_at || null,
+    }));
+
+    let faceitElo = null, faceitMatches = [];
+    if (faceitUser && faceitKey) {
+      setStatus('loading','Calling Faceit API...');
+      try {
+        const fH = { 'Accept':'application/json', 'Authorization':`Bearer ${faceitKey}` };
+        const fp = await fetch(`https://open.faceit.com/data/v4/players?nickname=${encodeURIComponent(faceitUser)}&game=cs2`,{headers:fH});
+        if (fp.ok) {
+          const fd = await fp.json();
+          const pid = fd.player_id;
+          const cs2 = fd.games && fd.games.cs2;
+          faceitElo = cs2 ? cs2.faceit_elo : null;
+          if (pid) {
+            const fh = await fetch(`https://open.faceit.com/data/v4/players/${pid}/history?game=cs2&limit=${matchCount+4}`,{headers:fH});
+            if (fh.ok) {
+              const fhd = await fh.json();
+              faceitMatches = (fhd.items||[]).map(m => {
+                const teams=m.teams||{},keys=Object.keys(teams);
+                let result='?',score='?:?';
+                for (const k of keys) {
+                  if ((teams[k].players||[]).some(pp=>pp.player_id===pid)) {
+                    result=(m.results&&m.results.winner===k)?'W':'L';
+                    const s=m.results&&m.results.score;
+                    if(s){const ok=keys.find(x=>x!==k);score=`${s[k]??'?'}:${ok?(s[ok]??'?'):'?'}`;}
+                    break;
+                  }
+                }
+                return { result, score, map:((m.voting?.map?.pick?.[0])||m.map||'').replace(/^de_/i,'').toUpperCase(), platform:'faceit', timestamp:m.finished_at?new Date(m.finished_at*1000).toISOString():null };
+              });
+            }
+          }
+        }
+      } catch(e) { console.warn('Faceit error',e.message); }
+    }
+
+    const merged = [...rawMatches,...faceitMatches].filter(m=>m.timestamp).sort((a,b)=>new Date(b.timestamp)-new Date(a.timestamp));
+    const noTs   = rawMatches.filter(m=>!m.timestamp);
+    liveData = { playerName, rating, faceitElo, matches:[...merged,...noTs].slice(0,matchCount) };
+    updatePreview();
+    setStatus('ok',`✓ Live data — ${playerName}${rating?' · Premier '+Number(rating).toLocaleString():''}${faceitElo?' · Faceit '+faceitElo:''}`);
+  } catch(err) {
+    setStatus('error',`✗ ${err.message}`);
+  } finally {
+    btn.textContent = '↻ FETCH LIVE DATA'; btn.disabled = false;
+  }
+}
+
+function setStatus(type, msg) {
+  const el = v('previewStatus');
+  el.className = 'preview-status ' + type;
+  el.textContent = msg;
+}
+
+async function generate() {
+  const steamId    = v('steamId').value.trim();
+  const leetifyKey = v('leetifyKey').value.trim();
+  if (!steamId || !leetifyKey) { alert('Steam64 ID and Leetify API Key are required.'); return; }
+
+  const btn = document.querySelector('.submit-btn');
+  btn.textContent = 'GENERATING...';
+  btn.disabled = true;
+
+  const settings = {
+    showName:     v('showName').checked,
+    showPlatform: v('showPlatform').checked,
+    showBorder:   v('showBorder').checked,
+    tierColors:   v('tierColors').checked,
+    fontStyle:    v('fontStyle').value,
+    fontSize:     v('fontSize').value,
+    widgetWidth:  parseInt(v('widgetWidth').value) || 420,
+    matchCount:   parseInt(v('matchCount').value) || 8,
+    bgOpacity:    parseInt(v('bgOpacity').value),
+    bgColor:      v('bgColor').value,
+    accentColor:  v('accentColor').value,
+    showDivider:  true,
+    tierColors:   v('tierColors').checked,
+    badgeSize:    'normal',
+    badgeGap:     4,
+    nameFontSize: 22,
+    eloFontSize:  20,
+    textColor:    '#ffffff',
+    showScore:    true,
+  };
+
+  try {
+    const res = await fetch('/setup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        steamId,
+        leetifyKey,
+        playerName:     v('playerName').value.trim(),
+        faceitUsername: v('faceitUsername').value.trim(),
+        faceitKey:      v('faceitKey').value.trim(),
+        settings,
+      }),
+    });
+
+    if (!res.ok) {
+      const txt = await res.text();
+      alert('Error: ' + txt);
+      btn.textContent = 'GENERATE WIDGET URL →';
+      btn.disabled = false;
+      return;
+    }
+
+    // Server returns the confirmation HTML page directly
+    const html = await res.text();
+    document.open();
+    document.write(html);
+    document.close();
+
+  } catch(e) {
+    alert('Network error: ' + e.message);
+    btn.textContent = 'GENERATE WIDGET URL →';
+    btn.disabled = false;
+  }
+}
+
+updatePreview();
+</script>
 </body>
 </html>

@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CS2 Widget Settings</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;600&family=Rajdhani:wght@400;600;700&family=Oswald:wght@400;600;700&family=Bebas+Neue&family=Exo+2:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #07070d; color: #fff; font-family: 'Barlow', sans-serif; display: flex; min-height: 100vh; }
+
+    /* ── Left panel ── */
+    .left-panel { width: 520px; min-width: 520px; background: #0d0d18; border-right: 1px solid rgba(255,255,255,0.06); padding: 32px 36px; overflow-y: auto; height: 100vh; position: sticky; top: 0; }
+    .logo { font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:700; letter-spacing:3px; color:rgba(255,255,255,0.25); text-transform:uppercase; margin-bottom:6px; }
+    h1 { font-family:'Barlow Condensed',sans-serif; font-size:26px; font-weight:900; letter-spacing:2px; color:#fff; margin-bottom:3px; }
+    h1 span { color:#e4a630; }
+    .subtitle { font-size:12px; color:rgba(255,255,255,0.3); margin-bottom:24px; line-height:1.5; }
+
+    .section-label { font-family:'Barlow Condensed',sans-serif; font-size:10px; font-weight:700; letter-spacing:2px; color:rgba(255,255,255,0.25); text-transform:uppercase; margin-bottom:10px; margin-top:22px; padding-bottom:6px; border-bottom:1px solid rgba(255,255,255,0.05); }
+
+    label { display:block; font-size:11px; font-weight:600; color:rgba(255,255,255,0.45); margin-bottom:5px; letter-spacing:0.4px; }
+    .field { margin-bottom:12px; }
+    input[type="number"], select { width:100%; background:#0a0a0f; border:1px solid rgba(255,255,255,0.08); border-radius:4px; padding:8px 11px; color:#fff; font-family:'Barlow',sans-serif; font-size:13px; outline:none; transition:border-color 0.15s; }
+    select { cursor:pointer; appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='rgba(255,255,255,0.3)'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 12px center; padding-right:32px; }
+    input:focus, select:focus { border-color:#e4a630; }
+    select option { background:#12121c; }
+    .two-col { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .three-col { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+
+    /* toggles */
+    .toggle-row { display:flex; align-items:center; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.03); }
+    .toggle-row:last-child { border-bottom:none; }
+    .toggle-label { font-size:12px; color:rgba(255,255,255,0.65); }
+    .toggle-label small { display:block; font-size:10px; color:rgba(255,255,255,0.25); margin-top:2px; }
+    .toggle { position:relative; width:36px; height:18px; flex-shrink:0; }
+    .toggle input { opacity:0; width:0; height:0; }
+    .slider { position:absolute; inset:0; background:rgba(255,255,255,0.1); border-radius:20px; cursor:pointer; transition:background 0.2s; }
+    .slider::before { content:''; position:absolute; left:3px; top:3px; width:12px; height:12px; border-radius:50%; background:#fff; transition:transform 0.2s; }
+    .toggle input:checked + .slider { background:#e4a630; }
+    .toggle input:checked + .slider::before { transform:translateX(18px); }
+
+    /* range */
+    .range-row { display:flex; align-items:center; gap:10px; }
+    input[type="range"] { flex:1; padding:0; background:transparent; border:none; accent-color:#e4a630; cursor:pointer; }
+    .range-val { font-family:'Barlow Condensed',sans-serif; font-size:15px; font-weight:700; color:#e4a630; min-width:42px; text-align:right; }
+
+    /* color */
+    input[type="color"] { width:34px; height:34px; padding:2px; border-radius:4px; border:1px solid rgba(255,255,255,0.1); background:#0a0a0f; cursor:pointer; }
+    .color-row { display:flex; align-items:center; gap:10px; }
+    .color-row span { font-size:11px; color:rgba(255,255,255,0.35); }
+
+    /* buttons */
+    .save-btn { margin-top:24px; width:100%; background:#e4a630; color:#0a0a0f; border:none; border-radius:4px; padding:13px; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:17px; letter-spacing:2px; cursor:pointer; transition:background 0.15s; }
+    .save-btn:hover { background:#f0b840; }
+    .save-btn:disabled { background:#555; color:#999; cursor:not-allowed; }
+
+    .status-bar { margin-top:12px; padding:10px 14px; border-radius:5px; font-size:12px; text-align:center; font-weight:600; display:none; }
+    .status-bar.ok { background:rgba(93,222,139,0.08); border:1px solid rgba(93,222,139,0.2); color:#5dde8b; display:block; }
+    .status-bar.error { background:rgba(224,85,85,0.08); border:1px solid rgba(224,85,85,0.2); color:#e05555; display:block; }
+
+    .back-link { display:inline-flex; align-items:center; gap:6px; font-size:12px; color:rgba(255,255,255,0.35); text-decoration:none; margin-bottom:20px; font-family:'Barlow Condensed',sans-serif; font-weight:700; letter-spacing:1px; }
+    .back-link:hover { color:#e4a630; }
+
+    /* ── Right panel ── */
+    .right-panel { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; padding:40px 32px; background:#07070d; }
+    .preview-label { font-family:'Barlow Condensed',sans-serif; font-size:10px; font-weight:700; letter-spacing:3px; color:rgba(255,255,255,0.2); text-transform:uppercase; margin-bottom:20px; align-self:flex-start; }
+    .preview-box { width:100%; display:flex; justify-content:center; margin-bottom:16px; }
+    .preview-note { font-size:11px; color:rgba(255,255,255,0.2); text-align:center; line-height:1.6; max-width:380px; }
+
+    .obs-hint { margin-top:28px; padding:14px 18px; background:rgba(228,166,48,0.04); border:1px solid rgba(228,166,48,0.1); border-radius:6px; font-size:12px; color:rgba(255,255,255,0.35); line-height:1.7; max-width:480px; width:100%; }
+    .obs-hint strong { color:#e4a630; }
+    .obs-hint code { font-family:monospace; color:#5dde8b; font-size:11px; }
+
+    .widget-url-box { margin-top:16px; padding:10px 14px; background:#0a0a0f; border:1px solid rgba(255,255,255,0.08); border-radius:5px; font-family:monospace; font-size:11px; color:#5dde8b; word-break:break-all; max-width:480px; width:100%; }
+    .copy-url-btn { margin-top:8px; background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.5); border:1px solid rgba(255,255,255,0.1); border-radius:4px; padding:7px 18px; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:13px; letter-spacing:1px; cursor:pointer; }
+    .copy-url-btn:hover { background:rgba(255,255,255,0.1); color:#fff; }
+  </style>
+</head>
+<body>
+<div class="left-panel">
+  <a class="back-link" href="/">← SETUP NEW WIDGET</a>
+  <div class="logo">CS2 Stream Widget</div>
+  <h1>WIDGET <span>SETTINGS</span></h1>
+  <p class="subtitle">Changes are saved instantly and reflected on your widget within seconds.</p>
+
+  <!-- DISPLAY TOGGLES -->
+  <div class="section-label">Display</div>
+  <div class="toggle-row">
+    <div class="toggle-label">Flip Layout<small>Move ELO to the left, name/badges to the right</small></div>
+    <label class="toggle"><input type="checkbox" id="flipLayout" onchange="updatePreview()"><span class="slider"></span></label>
+  </div>
+  <div class="toggle-row">
+    <div class="toggle-label">Show Player Name<small>Hide to shrink widget height</small></div>
+    <label class="toggle"><input type="checkbox" id="showName" onchange="updatePreview()"><span class="slider"></span></label>
+  </div>
+  <div class="toggle-row">
+    <div class="toggle-label">Show Platform Indicators<small>Small icons on match badges (Leetify / Faceit)</small></div>
+    <label class="toggle"><input type="checkbox" id="showPlatform" onchange="updatePreview()"><span class="slider"></span></label>
+  </div>
+  <div class="toggle-row">
+    <div class="toggle-label">Show Widget Border<small>Outer border + top accent line</small></div>
+    <label class="toggle"><input type="checkbox" id="showBorder" onchange="updatePreview()"><span class="slider"></span></label>
+  </div>
+  <div class="toggle-row">
+    <div class="toggle-label">Show Divider Line<small>Horizontal line between name row and badges</small></div>
+    <label class="toggle"><input type="checkbox" id="showDivider" onchange="updatePreview()"><span class="slider"></span></label>
+  </div>
+  <div class="toggle-row">
+    <div class="toggle-label">Tier Colors on ELO<small>Color-coded by rank bracket</small></div>
+    <label class="toggle"><input type="checkbox" id="tierColors" onchange="updatePreview()"><span class="slider"></span></label>
+  </div>
+  <div class="toggle-row">
+    <div class="toggle-label">Show Score on Tooltip<small>Hover badges to see score + map</small></div>
+    <label class="toggle"><input type="checkbox" id="showScore" onchange="updatePreview()"><span class="slider"></span></label>
+  </div>
+
+  <!-- SIZE -->
+  <div class="section-label">Size & Layout</div>
+  <div class="two-col">
+    <div class="field">
+      <label>Widget Width (px)</label>
+      <input type="number" id="widgetWidth" value="420" min="280" max="900" step="10" oninput="updatePreview()">
+    </div>
+    <div class="field">
+      <label>Matches to Show</label>
+      <select id="matchCount" onchange="updatePreview()">
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="10">10</option>
+        <option value="12">12</option>
+      </select>
+    </div>
+  </div>
+  <div class="two-col">
+    <div class="field">
+      <label>Badge Size</label>
+      <select id="badgeSize" onchange="updatePreview()">
+        <option value="small">Small (24px)</option>
+        <option value="normal">Normal (30px)</option>
+        <option value="large">Large (38px)</option>
+        <option value="xlarge">X-Large (46px)</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Badge Gap (px)</label>
+      <input type="number" id="badgeGap" value="4" min="1" max="16" step="1" oninput="updatePreview()">
+    </div>
+  </div>
+
+  <!-- FONT -->
+  <div class="section-label">Font</div>
+  <div class="two-col">
+    <div class="field">
+      <label>Font Style</label>
+      <select id="fontStyle" onchange="updatePreview()">
+        <option value="Barlow Condensed">Barlow Condensed</option>
+        <option value="Rajdhani">Rajdhani</option>
+        <option value="Oswald">Oswald</option>
+        <option value="Bebas Neue">Bebas Neue</option>
+        <option value="Exo 2">Exo 2</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Font Size Scale</label>
+      <select id="fontSize" onchange="updatePreview()">
+        <option value="small">Small</option>
+        <option value="normal">Normal</option>
+        <option value="large">Large</option>
+      </select>
+    </div>
+  </div>
+  <div class="field">
+    <label>Name Font Size (px)</label>
+    <div class="range-row">
+      <input type="range" id="nameFontSize" min="12" max="48" value="22" oninput="document.getElementById('nameFontSizeVal').textContent=this.value+'px';updatePreview()">
+      <div class="range-val" id="nameFontSizeVal">22px</div>
+    </div>
+  </div>
+  <div class="field">
+    <label>ELO Font Size (px)</label>
+    <div class="range-row">
+      <input type="range" id="eloFontSize" min="12" max="48" value="20" oninput="document.getElementById('eloFontSizeVal').textContent=this.value+'px';updatePreview()">
+      <div class="range-val" id="eloFontSizeVal">20px</div>
+    </div>
+  </div>
+
+  <!-- COLORS -->
+  <div class="section-label">Background & Colors</div>
+  <div class="field">
+    <label>Background Opacity</label>
+    <div class="range-row">
+      <input type="range" id="bgOpacity" min="0" max="100" value="96" oninput="document.getElementById('bgOpacityVal').textContent=this.value+'%';updatePreview()">
+      <div class="range-val" id="bgOpacityVal">96%</div>
+    </div>
+  </div>
+  <div class="three-col">
+    <div class="field">
+      <label>Background</label>
+      <div class="color-row"><input type="color" id="bgColor" value="#0a0a0f" oninput="updatePreview()"></div>
+    </div>
+    <div class="field">
+      <label>Accent Color</label>
+      <div class="color-row"><input type="color" id="accentColor" value="#e4a630" oninput="updatePreview()"></div>
+    </div>
+    <div class="field">
+      <label>Text Color</label>
+      <div class="color-row"><input type="color" id="textColor" value="#ffffff" oninput="updatePreview()"></div>
+    </div>
+  </div>
+
+  <button class="save-btn" id="saveBtn" onclick="saveSettings()">SAVE SETTINGS</button>
+  <div class="status-bar" id="statusBar"></div>
+</div>
+
+<div class="right-panel">
+  <div class="preview-label">Live Preview</div>
+  <div class="preview-box">
+    <iframe id="previewFrame" src="about:blank" style="border:none;background:transparent;overflow:hidden" width="420" height="130" scrolling="no"></iframe>
+  </div>
+  <p class="preview-note">Preview uses your real live data. Changes apply to your OBS widget automatically after saving.</p>
+
+  <div class="obs-hint" id="obsHint">
+    <strong>📺 OBS Browser Source settings:</strong><br>
+    Width: <code id="obsWidth">420</code>px &nbsp;·&nbsp; Height: ~<code id="obsHeight">130</code>px<br>
+    ✓ Shutdown source when not visible &nbsp;·&nbsp; ✓ Refresh browser when scene becomes active
+  </div>
+
+  <div style="margin-top:16px;font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,0.2);text-transform:uppercase;align-self:flex-start;max-width:480px;width:100%">Your Widget URL</div>
+  <div class="widget-url-box" id="widgetUrlBox">Loading...</div>
+  <button class="copy-url-btn" onclick="copyWidgetUrl()">COPY WIDGET URL</button>
+</div>
+
+<script>
+const TOKEN = new URLSearchParams(window.location.search).get('token');
+if (!TOKEN) location.href = '/';
+
+let liveData = null;
+let currentSettings = null;
+
+// ── Load settings from server ─────────────────────────────────────────────────
+async function loadSettings() {
+  try {
+    const res = await fetch(`/api/settings?token=${TOKEN}`);
+    if (!res.ok) { location.href = '/'; return; }
+    const data = await res.json();
+    currentSettings = data.settings;
+    applySettingsToForm(data.settings);
+
+    // Also fetch live data for preview
+    const mRes = await fetch(`/api/matches?token=${TOKEN}`);
+    if (mRes.ok) {
+      liveData = await mRes.json();
+    }
+    updatePreview();
+  } catch(e) {
+    console.error('Failed to load settings', e);
+  }
+}
+
+function applySettingsToForm(s) {
+  function set(id, val) { const el = document.getElementById(id); if (el) el.value = val; }
+  function setChk(id, val) { const el = document.getElementById(id); if (el) el.checked = val; }
+
+  setChk('flipLayout',   s.flipLayout   === true);
+  setChk('showName',     s.showName     !== false);
+  setChk('showPlatform', s.showPlatform !== false);
+  setChk('showBorder',   s.showBorder   !== false);
+  setChk('showDivider',  s.showDivider  !== false);
+  setChk('tierColors',   s.tierColors   !== false);
+  setChk('showScore',    s.showScore    !== false);
+
+  set('widgetWidth',  s.widgetWidth  || 420);
+  set('matchCount',   s.matchCount   || 8);
+  set('badgeSize',    s.badgeSize    || 'normal');
+  set('badgeGap',     s.badgeGap     || 4);
+  set('fontStyle',    s.fontStyle    || 'Barlow Condensed');
+  set('fontSize',     s.fontSize     || 'normal');
+  set('bgOpacity',    s.bgOpacity    !== undefined ? s.bgOpacity : 96);
+  set('bgColor',      s.bgColor      || '#0a0a0f');
+  set('accentColor',  s.accentColor  || '#e4a630');
+  set('textColor',    s.textColor    || '#ffffff');
+
+  const nfs = s.nameFontSize || 22;
+  const efs = s.eloFontSize  || 20;
+  document.getElementById('nameFontSize').value = nfs;
+  document.getElementById('nameFontSizeVal').textContent = nfs + 'px';
+  document.getElementById('eloFontSize').value = efs;
+  document.getElementById('eloFontSizeVal').textContent = efs + 'px';
+  document.getElementById('bgOpacityVal').textContent = (s.bgOpacity !== undefined ? s.bgOpacity : 96) + '%';
+}
+
+function getFormSettings() {
+  return {
+    flipLayout:   document.getElementById('flipLayout').checked,
+    showName:     document.getElementById('showName').checked,
+    showPlatform: document.getElementById('showPlatform').checked,
+    showBorder:   document.getElementById('showBorder').checked,
+    showDivider:  document.getElementById('showDivider').checked,
+    tierColors:   document.getElementById('tierColors').checked,
+    showScore:    document.getElementById('showScore').checked,
+    widgetWidth:  parseInt(document.getElementById('widgetWidth').value) || 420,
+    matchCount:   parseInt(document.getElementById('matchCount').value) || 8,
+    badgeSize:    document.getElementById('badgeSize').value,
+    badgeGap:     parseInt(document.getElementById('badgeGap').value) || 4,
+    fontStyle:    document.getElementById('fontStyle').value,
+    fontSize:     document.getElementById('fontSize').value,
+    bgOpacity:    parseInt(document.getElementById('bgOpacity').value),
+    bgColor:      document.getElementById('bgColor').value,
+    accentColor:  document.getElementById('accentColor').value,
+    textColor:    document.getElementById('textColor').value,
+    nameFontSize: parseInt(document.getElementById('nameFontSize').value) || 22,
+    eloFontSize:  parseInt(document.getElementById('eloFontSize').value)  || 20,
+  };
+}
+
+// ── Save settings ─────────────────────────────────────────────────────────────
+async function saveSettings() {
+  const btn = document.getElementById('saveBtn');
+  const bar = document.getElementById('statusBar');
+  btn.disabled = true;
+  btn.textContent = 'SAVING...';
+  bar.className = 'status-bar';
+
+  try {
+    const settings = getFormSettings();
+    const res = await fetch(`/api/settings?token=${TOKEN}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(settings),
+    });
+    if (!res.ok) throw new Error('Server error');
+    currentSettings = settings;
+    bar.className = 'status-bar ok';
+    bar.textContent = '✓ Settings saved — your widget will update within seconds.';
+  } catch(e) {
+    bar.className = 'status-bar error';
+    bar.textContent = '✗ Failed to save. Please try again.';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'SAVE SETTINGS';
+    setTimeout(() => { bar.className = 'status-bar'; }, 4000);
+  }
+}
+
+// ── Preview renderer ──────────────────────────────────────────────────────────
+function hexToRgb(hex) {
+  return `${parseInt(hex.slice(1,3),16)},${parseInt(hex.slice(3,5),16)},${parseInt(hex.slice(5,7),16)}`;
+}
+function getPremierColor(r, tierColors, accent) {
+  if (!tierColors) return accent;
+  if (r >= 30000) return '#e4a630';
+  if (r >= 25000) return '#e03030';
+  if (r >= 20000) return '#e0308a';
+  if (r >= 15000) return '#9b30e0';
+  if (r >= 10000) return '#3060e0';
+  if (r >=  5000) return '#60b8e0';
+  return '#aaaaaa';
+}
+function getFaceitColor(e, tierColors) {
+  if (!tierColors) return '#FF5500';
+  if (e >= 2001) return '#e03030';
+  if (e >= 1751) return '#e06020';
+  if (e >= 1531) return '#e07820';
+  if (e >= 1351) return '#e09020';
+  if (e >= 1201) return '#e0b030';
+  if (e >= 1051) return '#e0c830';
+  if (e >=  901) return '#d4e030';
+  return '#c8d820';
+}
+
+const BADGE_SIZES = { small: 24, normal: 30, large: 38, xlarge: 46 };
+
+function updatePreview() {
+  const c = getFormSettings();
+  const badgePx  = BADGE_SIZES[c.badgeSize] || 30;
+  const badgeFPx = Math.round(badgePx * 0.5);
+  const op  = c.bgOpacity / 100;
+  const rgb = hexToRgb(c.bgColor);
+  const bg  = `linear-gradient(135deg,rgba(${rgb},${op}) 0%,rgba(${rgb},${Math.min(op+0.04,1)}) 100%)`;
+  const borderStyle = c.showBorder
+    ? `border:1px solid rgba(255,255,255,0.07);border-top:2px solid ${c.accentColor}`
+    : 'border:none';
+
+  const data = liveData || {
+    playerName: 'PLAYER NAME', rating: 18450, faceitElo: null,
+    matches: [
+      {result:'W',score:'13:8', map:'MIRAGE',  platform:'leetify'},
+      {result:'L',score:'8:13', map:'INFERNO', platform:'leetify'},
+      {result:'W',score:'13:5', map:'DUST2',   platform:'leetify'},
+      {result:'D',score:'13:13',map:'NUKE',    platform:'leetify'},
+      {result:'W',score:'13:10',map:'ANCIENT', platform:'leetify'},
+      {result:'L',score:'10:13',map:'OVERPASS',platform:'leetify'},
+      {result:'W',score:'13:7', map:'VERTIGO', platform:'leetify'},
+      {result:'W',score:'13:9', map:'CACHE',   platform:'leetify'},
+    ]
+  };
+
+  const matches = (data.matches || []).slice(0, c.matchCount);
+  const premierColor = data.rating    ? getPremierColor(Number(data.rating),   c.tierColors, c.accentColor) : '#aaa';
+  const faceitColor  = data.faceitElo ? getFaceitColor(Number(data.faceitElo), c.tierColors)                : '#FF5500';
+
+  const badgeStyles = {
+    W: `background:linear-gradient(135deg,#1a4d2e,#2d7a4a);color:#5dde8b;border:1px solid rgba(93,222,139,0.25);box-shadow:0 0 8px rgba(93,222,139,0.15)`,
+    L: `background:linear-gradient(135deg,#4d1a1a,#7a2d2d);color:#e05555;border:1px solid rgba(224,85,85,0.25);box-shadow:0 0 8px rgba(224,85,85,0.15)`,
+    D: `background:linear-gradient(135deg,#3a3a1a,#5a5a2d);color:#e0c555;border:1px solid rgba(224,197,85,0.25)`,
+    unknown: `background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.25);border:1px solid rgba(255,255,255,0.08)`,
+  };
+
+  const badgesHtml = matches.map(m => {
+    const cls      = ['W','L','D'].includes(m.result) ? m.result : 'unknown';
+    const isFaceit = m.platform === 'faceit';
+    const sym = c.showPlatform ? (isFaceit
+      ? `<span style="position:absolute;bottom:-4px;right:-4px;display:flex"><svg viewBox="0 0 56 56" width="10" height="10" xmlns="http://www.w3.org/2000/svg"><polygon points="4,20 32,4 52,28 32,52 26,34 12,40" fill="#FF5500"/></svg></span>`
+      : `<span style="position:absolute;bottom:-4px;right:-4px;display:flex"><svg viewBox="0 0 40 44" width="10" height="10" xmlns="http://www.w3.org/2000/svg"><g transform="rotate(-8,20,22)"><rect x="6" y="2" width="28" height="36" rx="2" fill="#4B6FD4"/><rect x="2" y="2" width="5" height="36" rx="1" fill="#F5C518"/><g fill="white" transform="translate(12,6)"><rect x="4" y="0" width="9" height="2.5"/><rect x="1" y="3" width="2.5" height="10"/><rect x="4" y="3" width="6" height="2.5"/><rect x="11" y="3" width="5" height="10"/><rect x="4" y="12" width="7" height="3.5"/></g></g></svg></span>`) : '';
+    return `<div style="width:${badgePx}px;height:${badgePx}px;border-radius:3px;font-size:${badgeFPx}px;font-weight:900;display:flex;align-items:center;justify-content:center;position:relative;${badgeStyles[cls]};font-family:'${c.fontStyle}',sans-serif">${m.result}${sym}</div>`;
+  }).join('');
+
+  const nameHtml = c.showName
+    ? `<div style="font-size:${c.nameFontSize}px;font-weight:900;letter-spacing:2px;text-transform:uppercase;font-family:'${c.fontStyle}',sans-serif;color:${c.textColor}">${(data.playerName||'PLAYER NAME').toUpperCase()}</div>` : '';
+
+  const eloAlign = c.flipLayout ? 'flex-start' : 'flex-end';
+  const eloLabelAlign = c.flipLayout ? 'left' : 'right';
+
+  const premierHtml = data.rating
+    ? `<div style="display:flex;flex-direction:column;align-items:${eloAlign}"><span style="font-size:9px;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;opacity:0.5;display:block;text-align:${eloLabelAlign};margin-bottom:1px;font-family:'Barlow',sans-serif">Premier</span><div style="font-size:${c.eloFontSize}px;font-weight:900;color:${premierColor};letter-spacing:1px;font-family:'${c.fontStyle}',sans-serif">${Number(data.rating).toLocaleString()}</div></div>` : '';
+
+  const faceitHtml = data.faceitElo
+    ? `<div style="display:flex;flex-direction:column;align-items:${eloAlign}"><span style="font-size:9px;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;opacity:0.5;display:block;text-align:${eloLabelAlign};margin-bottom:1px;font-family:'Barlow',sans-serif">Faceit</span><div style="font-size:${c.eloFontSize}px;font-weight:900;color:${faceitColor};letter-spacing:1px;font-family:'${c.fontStyle}',sans-serif">${Number(data.faceitElo).toLocaleString()}</div></div>` : '';
+
+  const dividerHtml = c.showDivider ? `<div style="height:1px;background:rgba(255,255,255,0.07);margin-bottom:10px"></div>` : `<div style="height:6px"></div>`;
+
+  const estimatedH = 14 + (c.showName ? c.nameFontSize + 14 : 0) + (c.showDivider ? 11 : 6) + badgePx + 12 + 16;
+
+  const badgesHtml_inline = `<div style="display:flex;gap:${c.badgeGap}px;align-items:center">${badgesHtml}</div>`;
+  const badgesHtml_row    = badgesHtml;
+
+  const topRowDir     = c.flipLayout ? 'row-reverse' : 'row';
+  const resultsRowDir = c.flipLayout ? 'row-reverse' : 'row';
+
+  const html = `<!DOCTYPE html><html><head>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;600&family=Rajdhani:wght@400;600;700&family=Oswald:wght@400;600;700&family=Bebas+Neue&family=Exo+2:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>*{margin:0;padding:0;box-sizing:border-box}body{background:transparent;overflow:hidden}</style>
+    </head><body>
+    <div style="${borderStyle};background:${bg};border-radius:4px;padding:14px 18px 12px;box-shadow:0 8px 32px rgba(0,0,0,0.7);width:${c.widgetWidth}px">
+      <div style="display:flex;align-items:center;flex-direction:${topRowDir};justify-content:space-between;margin-bottom:10px">
+        ${c.showName ? nameHtml : badgesHtml_inline}
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="display:flex;gap:14px;align-items:flex-end">${premierHtml}${faceitHtml}</div>
+          <div style="width:7px;height:7px;border-radius:50%;background:${liveData?'#5dde8b':'#444'};box-shadow:${liveData?'0 0 6px rgba(93,222,139,0.5)':'none'}"></div>
+        </div>
+      </div>
+      ${c.showName ? dividerHtml : ''}
+      ${c.showName ? `<div style="display:flex;flex-direction:${resultsRowDir};gap:${c.badgeGap}px;align-items:center;flex-wrap:nowrap">
+        ${badgesHtml_row}
+        <div style="font-size:9px;color:rgba(255,255,255,0.2);letter-spacing:0.5px;text-transform:uppercase;margin-left:auto;font-family:'Barlow',sans-serif"><a href="https://leetify.com" style="color:${c.accentColor};text-decoration:none">Data by Leetify</a></div>
+      </div>` : ''}
+    </div></body></html>`;
+
+  const frame = document.getElementById('previewFrame');
+  frame.style.width  = c.widgetWidth + 'px';
+  frame.style.height = (estimatedH + 10) + 'px';
+  const doc = frame.contentDocument || frame.contentWindow.document;
+  doc.open(); doc.write(html); doc.close();
+
+  // Update OBS hints
+  document.getElementById('obsWidth').textContent  = c.widgetWidth;
+  document.getElementById('obsHeight').textContent = estimatedH + 10;
+}
+
+// ── Widget URL display ────────────────────────────────────────────────────────
+function setWidgetUrl() {
+  const url = `${location.origin}/widget?token=${TOKEN}`;
+  document.getElementById('widgetUrlBox').textContent = url;
+}
+
+function copyWidgetUrl() {
+  const url = `${location.origin}/widget?token=${TOKEN}`;
+  navigator.clipboard.writeText(url);
+  const btn = document.querySelector('.copy-url-btn');
+  btn.textContent = '✓ COPIED!';
+  setTimeout(() => btn.textContent = 'COPY WIDGET URL', 2000);
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+setWidgetUrl();
+loadSettings();
+</script>
+</body>
+</html>

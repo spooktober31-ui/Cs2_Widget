@@ -3,29 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <title>CS2 Widget</title>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;600&family=Rajdhani:wght@400;600;700&family=Oswald:wght@400;600;700&family=Bebas+Neue&family=Exo+2:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    background: transparent;
-    font-family: 'Barlow Condensed', sans-serif;
-    overflow: hidden;
-  }
+  body { background: transparent; overflow: hidden; }
 
   .widget {
-    background: linear-gradient(135deg, rgba(10,10,15,0.96) 0%, rgba(18,18,28,0.96) 100%);
-    border: 1px solid rgba(255,255,255,0.07);
-    border-top: 2px solid #e4a630;
     border-radius: 4px;
     padding: 14px 18px 12px;
-    min-width: 380px;
-    max-width: 480px;
     position: relative;
     box-shadow: 0 8px 32px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.04);
   }
-
-  /* subtle noise overlay */
   .widget::before {
     content: '';
     position: absolute;
@@ -35,209 +23,54 @@
     border-radius: 4px;
   }
 
-  /* ── Top row ── */
-  .top-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 10px;
-  }
+  .top-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+  .player-name { font-weight:900; letter-spacing:2px; text-transform:uppercase; }
+  .right-block { display:flex; align-items:center; gap:10px; }
+  .elo-label { font-size:9px; font-weight:600; letter-spacing:0.8px; text-transform:uppercase; opacity:0.5; display:block; text-align:right; margin-bottom:1px; font-family:'Barlow',sans-serif; }
+  .elo-group { display:flex; flex-direction:column; align-items:flex-end; }
+  .elo-row { display:flex; gap:14px; align-items:flex-end; }
+  .status-dot { width:7px; height:7px; border-radius:50%; background:#555; flex-shrink:0; transition:background 0.3s; }
+  .status-dot.ok    { background:#5dde8b; box-shadow:0 0 6px rgba(93,222,139,0.5); }
+  .status-dot.error { background:#e05555; }
+  .divider { height:1px; background:rgba(255,255,255,0.07); margin-bottom:10px; }
+  .results { display:flex; flex-direction:row; align-items:center; flex-wrap:nowrap; }
+  #badges { display:flex; flex-direction:row; align-items:center; }
+  .attribution { font-size:9px; color:rgba(255,255,255,0.2); letter-spacing:0.5px; text-transform:uppercase; margin-left:auto; font-family:'Barlow',sans-serif; align-self:flex-end; }
+  .attribution a { text-decoration:none; }
 
-  .player-name {
-    font-size: 22px;
-    font-weight: 900;
-    color: #ffffff;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-  }
-
-  .right-block {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .rating {
-    font-size: 20px;
-    font-weight: 900;
-    color: #aaaaaa; /* overridden dynamically by JS tier logic */
-    letter-spacing: 1px;
-  }
-
-  .faceit-elo {
-    font-size: 20px;
-    font-weight: 900;
-    color: #FF5500;
-    letter-spacing: 1px;
-  }
-
-  .elo-label {
-    font-size: 9px;
-    font-weight: 600;
-    letter-spacing: 0.8px;
-    text-transform: uppercase;
-    opacity: 0.5;
-    display: block;
-    text-align: right;
-    margin-bottom: 1px;
-    color: #ffffff;
-    font-family: 'Barlow', sans-serif;
-  }
-
-  .elo-group {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-  }
-
-  .elo-row {
-    display: flex;
-    gap: 14px;
-    align-items: flex-end;
-  }
-
-  .status-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: #555;
-    flex-shrink: 0;
-    transition: background 0.3s;
-  }
-  .status-dot.ok    { background: #5dde8b; box-shadow: 0 0 6px rgba(93,222,139,0.5); }
-  .status-dot.error { background: #e05555; }
-
-  /* ── Divider ── */
-  .divider {
-    height: 1px;
-    background: rgba(255,255,255,0.07);
-    margin-bottom: 10px;
-  }
-
-  /* ── Results row ── */
-  .results {
-    display: flex;
-    flex-direction: row;
-    gap: 4px;
-    align-items: center;
-    flex-wrap: nowrap;
-  }
-
-  #badges {
-    display: flex;
-    flex-direction: row;
-    gap: 4px;
-    align-items: center;
-  }
-
-  /* Leetify attribution (required by their dev guidelines) */
-  .attribution {
-    font-size: 9px;
-    color: rgba(255,255,255,0.2);
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    margin-left: auto;
-    font-family: 'Barlow', sans-serif;
-    align-self: flex-end;
-  }
-  .attribution a {
-    color: #F84982;
-    text-decoration: none;
-  }
-
-  /* ── W/L/D badges ── */
   .badge {
-    width: 30px;
-    height: 30px;
-    border-radius: 3px;
-    font-size: 15px;
-    font-weight: 900;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    cursor: default;
-    transition: transform 0.15s;
+    border-radius:3px; font-weight:900; display:flex; align-items:center;
+    justify-content:center; position:relative; cursor:default;
+    transition:transform 0.15s;
   }
-  .badge:hover { transform: scale(1.1); }
+  .badge:hover { transform:scale(1.1); }
+  .badge.W { background:linear-gradient(135deg,#1a4d2e,#2d7a4a); color:#5dde8b; border:1px solid rgba(93,222,139,0.25); box-shadow:0 0 8px rgba(93,222,139,0.15); }
+  .badge.L { background:linear-gradient(135deg,#4d1a1a,#7a2d2d); color:#e05555; border:1px solid rgba(224,85,85,0.25); box-shadow:0 0 8px rgba(224,85,85,0.15); }
+  .badge.D { background:linear-gradient(135deg,#3a3a1a,#5a5a2d); color:#e0c555; border:1px solid rgba(224,197,85,0.25); }
+  .badge.unknown { background:rgba(255,255,255,0.05); color:rgba(255,255,255,0.25); border:1px solid rgba(255,255,255,0.08); }
 
-  .badge.W {
-    background: linear-gradient(135deg, #1a4d2e, #2d7a4a);
-    color: #5dde8b;
-    border: 1px solid rgba(93,222,139,0.25);
-    box-shadow: 0 0 8px rgba(93,222,139,0.15);
-  }
-  .badge.L {
-    background: linear-gradient(135deg, #4d1a1a, #7a2d2d);
-    color: #e05555;
-    border: 1px solid rgba(224,85,85,0.25);
-    box-shadow: 0 0 8px rgba(224,85,85,0.15);
-  }
-  .badge.D {
-    background: linear-gradient(135deg, #3a3a1a, #5a5a2d);
-    color: #e0c555;
-    border: 1px solid rgba(224,197,85,0.25);
-  }
-  .badge.unknown {
-    background: rgba(255,255,255,0.05);
-    color: rgba(255,255,255,0.25);
-    border: 1px solid rgba(255,255,255,0.08);
-  }
-
-  /* tooltip */
   .badge[data-tip]:hover::after {
-    content: attr(data-tip);
-    position: absolute;
-    bottom: calc(100% + 6px);
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0,0,0,0.92);
-    color: #fff;
-    font-size: 11px;
-    font-weight: 400;
-    font-family: 'Barlow', sans-serif;
-    padding: 4px 8px;
-    border-radius: 3px;
-    white-space: nowrap;
-    pointer-events: none;
-    z-index: 10;
-    letter-spacing: 0.5px;
+    content:attr(data-tip); position:absolute; bottom:calc(100% + 6px); left:50%; transform:translateX(-50%);
+    background:rgba(0,0,0,0.92); color:#fff; font-size:11px; font-weight:400; font-family:'Barlow',sans-serif;
+    padding:4px 8px; border-radius:3px; white-space:nowrap; pointer-events:none; z-index:10; letter-spacing:0.5px;
   }
 
-  .no-data {
-    color: rgba(255,255,255,0.2);
-    font-size: 13px;
-    font-style: italic;
-    letter-spacing: 0.5px;
-  }
+  .badge .platform-sym { position:absolute; bottom:-4px; right:-4px; display:flex; align-items:center; justify-content:center; pointer-events:none; }
+  .badge .platform-sym svg { width:10px; height:10px; }
 
-  /* platform symbol in badge corner */
-  .badge .platform-sym {
-    position: absolute;
-    bottom: -4px;
-    right: -4px;
-    font-size: 7px;
-    font-weight: 900;
-    line-height: 1;
-    pointer-events: none;
-    opacity: 1;
-    font-family: 'Barlow', sans-serif;
-    letter-spacing: 0;
-  }
-  .badge .platform-sym { display: flex; align-items: center; justify-content: center; }
-  .badge .platform-sym svg { width: 10px; height: 10px; opacity: 1; }
+  .no-data { color:rgba(255,255,255,0.2); font-size:13px; font-style:italic; letter-spacing:0.5px; }
 
-  @keyframes pop {
-    from { opacity: 0; transform: scale(0.7); }
-    to   { opacity: 1; transform: scale(1); }
-  }
-  .badge { animation: pop 0.25s ease forwards; }
+  @keyframes pop { from{opacity:0;transform:scale(0.7)} to{opacity:1;transform:scale(1)} }
+  .badge { animation:pop 0.25s ease forwards; }
 </style>
 </head>
 <body>
-<div class="widget">
-  <div class="top-row">
+<div class="widget" id="widget">
+  <div class="top-row" id="top-row">
+    <!-- Name (hidden when showName=false) -->
     <div class="player-name" id="player-name">CS2 Widget</div>
+    <!-- Badges slot in top row — only visible when name is hidden -->
+    <div id="badges-inline" style="display:none;flex:1;align-items:center;"></div>
     <div class="right-block">
       <div class="elo-row">
         <div class="elo-group" id="premier-group" style="display:none">
@@ -249,81 +82,163 @@
           <div class="faceit-elo" id="faceit-elo"></div>
         </div>
       </div>
-      <div class="status-dot" id="status-dot" title="Leetify connection"></div>
+      <div class="status-dot" id="status-dot"></div>
     </div>
   </div>
-
-  <div class="divider"></div>
-
-  <div class="results">
-    <div id="badges"><span class="no-data">Fetching matches...</span></div>
-    <div class="attribution"><a href="https://leetify.com" target="_blank">Data by Leetify</a></div>
+  <div class="divider" id="divider"></div>
+  <!-- Normal badges row — visible when name is shown -->
+  <div class="results" id="results-row">
+    <div id="badges"><span class="no-data">Fetching...</span></div>
+    <div class="attribution"><a id="attr-link" href="https://leetify.com" target="_blank">Data by Leetify</a></div>
   </div>
 </div>
 
 <script>
-const token   = new URLSearchParams(window.location.search).get('token') || '';
-const API     = `/api/matches?token=${token}`;
-const REFRESH = 15000;
+const TOKEN = new URLSearchParams(window.location.search).get('token');
+const REFRESH_MS = 15000;
+const BADGE_SIZES = { small: 24, normal: 30, large: 38, xlarge: 46 };
 
-async function refresh() {
-  try {
-    const res  = await fetch(API);
-    const data = await res.json();
-    render(data);
-  } catch {
-    document.getElementById('status-dot').className = 'status-dot error';
-    document.getElementById('status-dot').title = 'Backend not running';
+let S = null; // current settings
+let lastMatches = [];
+
+function hexToRgb(hex) {
+  return `${parseInt(hex.slice(1,3),16)},${parseInt(hex.slice(3,5),16)},${parseInt(hex.slice(5,7),16)}`;
+}
+
+function getPremierColor(r) {
+  if (!S.tierColors) return S.accentColor;
+  if (r >= 30000) return '#e4a630';
+  if (r >= 25000) return '#e03030';
+  if (r >= 20000) return '#e0308a';
+  if (r >= 15000) return '#9b30e0';
+  if (r >= 10000) return '#3060e0';
+  if (r >=  5000) return '#60b8e0';
+  return '#aaaaaa';
+}
+
+function getFaceitColor(e) {
+  if (!S.tierColors) return '#FF5500';
+  if (e >= 2001) return '#e03030';
+  if (e >= 1751) return '#e06020';
+  if (e >= 1531) return '#e07820';
+  if (e >= 1351) return '#e09020';
+  if (e >= 1201) return '#e0b030';
+  if (e >= 1051) return '#e0c830';
+  if (e >=  901) return '#d4e030';
+  return '#c8d820';
+}
+
+function applyLayout() {
+  const widget = document.getElementById('widget');
+  const op  = (S.bgOpacity !== undefined ? S.bgOpacity : 96) / 100;
+  const rgb = hexToRgb(S.bgColor || '#0a0a0f');
+
+  widget.style.width    = (S.widgetWidth || 420) + 'px';
+  widget.style.minWidth = (S.widgetWidth || 420) + 'px';
+  widget.style.maxWidth = (S.widgetWidth || 420) + 'px';
+  widget.style.background = `linear-gradient(135deg,rgba(${rgb},${op}) 0%,rgba(${rgb},${Math.min(op+0.04,1)}) 100%)`;
+
+  if (S.showBorder !== false) {
+    widget.style.border    = '1px solid rgba(255,255,255,0.07)';
+    widget.style.borderTop = `2px solid ${S.accentColor || '#e4a630'}`;
+  } else {
+    widget.style.border = 'none';
+  }
+
+  // Font
+  const ff = S.fontStyle || 'Barlow Condensed';
+  document.body.style.fontFamily = `'${ff}', sans-serif`;
+  const fontLink = document.createElement('link');
+  fontLink.rel  = 'stylesheet';
+  fontLink.href = `https://fonts.googleapis.com/css2?family=${ff.replace(/ /g,'+')}:wght@400;600;700;900&display=swap`;
+  document.head.appendChild(fontLink);
+
+  // Name visibility — when hidden, badges move into top row alongside ELO
+  const nameEl      = document.getElementById('player-name');
+  const resultsRow  = document.getElementById('results-row');
+  const badgesInline = document.getElementById('badges-inline');
+  const divider     = document.getElementById('divider');
+
+  if (!S.showName) {
+    nameEl.style.display       = 'none';
+    resultsRow.style.display   = 'none';
+    badgesInline.style.display = 'flex';
+    divider.style.display      = 'none';
+    // In no-name mode, top-row is: [badges-inline] [elo+dot]
+    // When flipped: [elo+dot] [badges-inline] — row-reverse handles this naturally
+    document.getElementById('top-row').style.justifyContent = 'space-between';
+  } else {
+    nameEl.style.display       = '';
+    resultsRow.style.display   = '';
+    badgesInline.style.display = 'none';
+    divider.style.display      = S.showDivider === false ? 'none' : '';
+    document.getElementById('top-row').style.justifyContent = 'space-between';
+  }
+
+  // Divider (only relevant when name is shown)
+  if (S.showName && S.showDivider === false) divider.style.display = 'none';
+
+  // Badge gap
+  document.getElementById('badges').style.gap = (S.badgeGap || 4) + 'px';
+  document.getElementById('results-row').style.gap = (S.badgeGap || 4) + 'px';
+
+  // Accent on attribution
+  document.getElementById('attr-link').style.color = S.accentColor || '#e4a630';
+
+  // Flip layout — swap name/badges side with ELO side
+  const topRow     = document.getElementById('top-row');
+  const resultsRowEl = document.getElementById('results-row');
+  const eloGroups  = document.querySelectorAll('.elo-group');
+  if (S.flipLayout) {
+    topRow.style.flexDirection = 'row-reverse';
+    resultsRowEl.style.flexDirection = 'row-reverse';
+    // ELO labels align left when flipped
+    eloGroups.forEach(g => { g.style.alignItems = 'flex-start'; });
+    document.querySelectorAll('.elo-label').forEach(l => { l.style.textAlign = 'left'; });
+  } else {
+    topRow.style.flexDirection = '';
+    resultsRowEl.style.flexDirection = '';
+    eloGroups.forEach(g => { g.style.alignItems = 'flex-end'; });
+    document.querySelectorAll('.elo-label').forEach(l => { l.style.textAlign = 'right'; });
   }
 }
 
 function render(data) {
-  // Player name
-  document.getElementById('player-name').textContent = (data.playerName || 'CS2 PLAYER').toUpperCase();
+  if (!S) return;
 
-  // Rating (Premier)
-  const ratingEl = document.getElementById('rating');
-  const premierGroup = document.getElementById('premier-group');
-
-  function getPremierColor(rating) {
-    if (rating >= 30000) return '#e4a630'; // Yellow    (30k+)
-    if (rating >= 25000) return '#e03030'; // Red       (25k–30k)
-    if (rating >= 20000) return '#e0308a'; // Pink      (20k–25k)
-    if (rating >= 15000) return '#9b30e0'; // Purple    (15k–20k)
-    if (rating >= 10000) return '#3060e0'; // Blue      (10k–15k)
-    if (rating >=  5000) return '#60b8e0'; // Light Blue (5k–10k)
-    return '#aaaaaa';                       // Gray      (0–5k)
+  const nameEl = document.getElementById('player-name');
+  if (S.showName !== false) {
+    nameEl.textContent    = (data.playerName || 'CS2 PLAYER').toUpperCase();
+    nameEl.style.color    = S.textColor || '#ffffff';
+    nameEl.style.fontSize = (S.nameFontSize || 22) + 'px';
+    nameEl.style.fontFamily = `'${S.fontStyle || 'Barlow Condensed'}', sans-serif`;
   }
 
+  // Premier
+  const ratingEl     = document.getElementById('rating');
+  const premierGroup = document.getElementById('premier-group');
   if (data.rating) {
     const r = Number(data.rating);
-    ratingEl.textContent = r.toLocaleString();
-    ratingEl.style.color = getPremierColor(r);
+    ratingEl.textContent  = r.toLocaleString();
+    ratingEl.style.color  = getPremierColor(r);
+    ratingEl.style.fontSize   = (S.eloFontSize || 20) + 'px';
+    ratingEl.style.fontFamily = `'${S.fontStyle || 'Barlow Condensed'}', sans-serif`;
+    ratingEl.style.fontWeight = '900';
     premierGroup.style.display = '';
   } else {
     premierGroup.style.display = 'none';
   }
 
-  // Faceit ELO
-  const faceitEl = document.getElementById('faceit-elo');
+  // Faceit
+  const faceitEl    = document.getElementById('faceit-elo');
   const faceitGroup = document.getElementById('faceit-group');
-  function getFaceitColor(elo) {
-    if (elo >= 2001) return '#e03030'; // Red       - Level 10
-    if (elo >= 1751) return '#e06020'; // Dark Orange - Level 9
-    if (elo >= 1531) return '#e07820'; // Orange    - Level 8
-    if (elo >= 1351) return '#e09020'; // Orange    - Level 7
-    if (elo >= 1201) return '#e0b030'; // Amber     - Level 6
-    if (elo >= 1051) return '#e0c830'; // Yellow-Orange - Level 5
-    if (elo >=  901) return '#d4e030'; // Yellow    - Level 4
-    if (elo >=  751) return '#c8d820'; // Yellow    - Level 3
-    if (elo >=  501) return '#c8d820'; // Yellow    - Level 2
-    return '#c8d820';                  // Yellow    - Level 1
-  }
-
   if (data.faceitElo) {
     const fe = Number(data.faceitElo);
-    faceitEl.textContent = fe.toLocaleString();
-    faceitEl.style.color = getFaceitColor(fe);
+    faceitEl.textContent  = fe.toLocaleString();
+    faceitEl.style.color  = getFaceitColor(fe);
+    faceitEl.style.fontSize   = (S.eloFontSize || 20) + 'px';
+    faceitEl.style.fontFamily = `'${S.fontStyle || 'Barlow Condensed'}', sans-serif`;
+    faceitEl.style.fontWeight = '900';
     faceitGroup.style.display = '';
   } else {
     faceitGroup.style.display = 'none';
@@ -332,34 +247,64 @@ function render(data) {
   // Status dot
   const dot = document.getElementById('status-dot');
   dot.className = 'status-dot ' + (data.status === 'ok' ? 'ok' : data.status === 'error' ? 'error' : '');
-  dot.title = data.error || (data.status === 'ok' ? 'Leetify connected' : 'Connecting...');
+  dot.title = data.error || (data.status === 'ok' ? 'Live' : 'Connecting...');
 
-  // Badges
-  const container = document.getElementById('badges');
-  const matches   = (data.matches || []).slice(0, 8).reverse();
+  // Badges — write to whichever container is active
+  const badgePx    = BADGE_SIZES[S.badgeSize] || 30;
+  const badgeFPx   = Math.round(badgePx * 0.5);
+  const matchCount = S.matchCount || 8;
+  const matches    = (data.matches || []).slice(0, matchCount).reverse();
+  const gap        = (S.badgeGap || 4) + 'px';
 
-  if (!matches.length) {
-    container.innerHTML = '<span class="no-data">No matches yet...</span>';
-    return;
+  const badgesHtml = !matches.length
+    ? '<span class="no-data">No matches yet...</span>'
+    : matches.map(m => {
+        const cls      = ['W','L','D'].includes(m.result) ? m.result : 'unknown';
+        const isFaceit = m.platform === 'faceit';
+        const parts    = [];
+        if (S.showScore !== false && m.score && m.score !== '?:?') parts.push(m.score);
+        if (m.map) parts.push(m.map);
+        const tip = parts.join(' · ');
+        const sym = S.showPlatform !== false
+          ? (isFaceit
+            ? `<span class="platform-sym"><svg viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg"><polygon points="4,20 32,4 52,28 32,52 26,34 12,40" fill="#FF5500"/></svg></span>`
+            : `<span class="platform-sym"><svg viewBox="0 0 40 44" xmlns="http://www.w3.org/2000/svg"><g transform="rotate(-8,20,22)"><rect x="6" y="2" width="28" height="36" rx="2" fill="#4B6FD4"/><rect x="2" y="2" width="5" height="36" rx="1" fill="#F5C518"/><g fill="white" transform="translate(12,6)"><rect x="4" y="0" width="9" height="2.5"/><rect x="1" y="3" width="2.5" height="10"/><rect x="4" y="3" width="6" height="2.5"/><rect x="11" y="3" width="5" height="10"/><rect x="4" y="12" width="7" height="3.5"/></g></g></svg></span>`)
+          : '';
+        return `<div class="badge ${cls}" data-tip="${tip}" style="width:${badgePx}px;height:${badgePx}px;font-size:${badgeFPx}px;font-family:'${S.fontStyle||'Barlow Condensed'}',sans-serif">${m.result}${sym}</div>`;
+      }).join('');
+
+  if (!S.showName) {
+    const inlineEl = document.getElementById('badges-inline');
+    inlineEl.style.gap = gap;
+    inlineEl.innerHTML = badgesHtml;
+  } else {
+    const container = document.getElementById('badges');
+    container.style.gap = gap;
+    container.innerHTML = badgesHtml;
   }
+}
 
-  container.innerHTML = matches.map(m => {
-    const cls  = ['W','L','D'].includes(m.result) ? m.result : 'unknown';
-    const parts = [];
-    if (m.score && m.score !== '?:?') parts.push(m.score);
-    if (m.map)   parts.push(m.map);
-    const tip  = parts.join(' · ');
-    const isFaceit = m.platform === 'faceit';
-    // Faceit: angular arrow logo | Premier: CS2 blue badge icon
-    const sym  = isFaceit
-      ? `<span class="platform-sym"><svg viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg"><polygon points="4,20 32,4 52,28 32,52 26,34 12,40" fill="#FF5500"/></svg></span>`
-      : `<span class="platform-sym"><svg viewBox="0 0 40 44" xmlns="http://www.w3.org/2000/svg"><g transform="rotate(-8,20,22)"><rect x="6" y="2" width="28" height="36" rx="2" fill="#4B6FD4"/><rect x="2" y="2" width="5" height="36" rx="1" fill="#F5C518"/><g fill="white" transform="translate(12,6)"><rect x="4" y="0" width="9" height="2.5"/><rect x="1" y="3" width="2.5" height="10"/><rect x="4" y="3" width="6" height="2.5"/><rect x="11" y="3" width="5" height="10"/><rect x="4" y="12" width="7" height="3.5"/></g></g></svg></span>`;
-    return `<div class="badge ${cls}" data-tip="${tip}">${m.result}${sym}</div>`;
-  }).join('');
+async function refresh() {
+  if (!TOKEN) return;
+  try {
+    const res = await fetch(`/api/matches?token=${TOKEN}`);
+    if (!res.ok) throw new Error(`API ${res.status}`);
+    const data = await res.json();
+
+    const settingsChanged = JSON.stringify(data.settings) !== JSON.stringify(S);
+    S = data.settings;
+    if (settingsChanged) applyLayout();
+
+    lastMatches = data.matches || [];
+    render(data);
+  } catch(err) {
+    console.error('Refresh error', err.message);
+    render({ playerName: 'CS2 PLAYER', rating: null, faceitElo: null, matches: lastMatches, status: 'error', error: err.message });
+  }
 }
 
 refresh();
-setInterval(refresh, REFRESH);
+setInterval(refresh, REFRESH_MS);
 </script>
 </body>
 </html>
