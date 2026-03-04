@@ -12,6 +12,7 @@
     border-radius: 4px;
     padding: 14px 18px 12px;
     position: relative;
+    overflow: hidden;
     box-shadow: 0 8px 32px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.04);
   }
   .widget::before {
@@ -26,12 +27,10 @@
   .top-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
   .player-name { font-weight:900; letter-spacing:2px; text-transform:uppercase; }
   .right-block { display:flex; align-items:center; gap:10px; }
-  .elo-label { font-size:9px; font-weight:600; letter-spacing:0.8px; text-transform:uppercase; opacity:0.5; display:block; text-align:right; margin-bottom:1px; font-family:'Barlow',sans-serif; }
+  .elo-label { font-size:9px; font-weight:600; letter-spacing:0.8px; text-transform:uppercase; color:rgba(255,255,255,0.5); display:block; text-align:right; margin-bottom:1px; font-family:'Barlow',sans-serif; }
   .elo-group { display:flex; flex-direction:column; align-items:flex-end; }
   .elo-row { display:flex; gap:14px; align-items:flex-end; }
-  .status-dot { width:7px; height:7px; border-radius:50%; background:#555; flex-shrink:0; transition:background 0.3s; }
-  .status-dot.ok    { background:#5dde8b; box-shadow:0 0 6px rgba(93,222,139,0.5); }
-  .status-dot.error { background:#e05555; }
+  .status-dot { display:none; }
   .divider { height:1px; background:rgba(255,255,255,0.07); margin-bottom:10px; }
   .results { display:flex; flex-direction:row; align-items:center; flex-wrap:nowrap; }
   #badges { display:flex; flex-direction:row; align-items:center; }
@@ -82,7 +81,7 @@
           <div class="faceit-elo" id="faceit-elo"></div>
         </div>
       </div>
-      <div class="status-dot" id="status-dot"></div>
+      <div class="status-dot" id="status-dot" style="display:none"></div>
     </div>
   </div>
   <div class="divider" id="divider"></div>
@@ -244,10 +243,7 @@ function render(data) {
     faceitGroup.style.display = 'none';
   }
 
-  // Status dot
-  const dot = document.getElementById('status-dot');
-  dot.className = 'status-dot ' + (data.status === 'ok' ? 'ok' : data.status === 'error' ? 'error' : '');
-  dot.title = data.error || (data.status === 'ok' ? 'Live' : 'Connecting...');
+  // Status dot removed
 
   // Badges — write to whichever container is active
   const badgePx    = BADGE_SIZES[S.badgeSize] || 30;

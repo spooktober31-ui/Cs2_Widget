@@ -377,6 +377,9 @@ function updatePreview() {
   const borderStyle = c.showBorder
     ? `border:1px solid rgba(255,255,255,0.07);border-top:2px solid ${c.accentColor}`
     : 'border:none';
+  const topRowDir     = c.flipLayout ? 'row-reverse' : 'row';
+  const eloAlign      = c.flipLayout ? 'flex-start'  : 'flex-end';
+  const eloLabelAlign = c.flipLayout ? 'left'        : 'right';
 
   const data = liveData || {
     playerName: 'PLAYER NAME', rating: 18450, faceitElo: null,
@@ -412,73 +415,56 @@ function updatePreview() {
     return `<div style="width:${badgePx}px;height:${badgePx}px;border-radius:3px;font-size:${badgeFPx}px;font-weight:900;display:flex;align-items:center;justify-content:center;position:relative;${badgeStyles[cls]};font-family:'${c.fontStyle}',sans-serif">${m.result}${sym}</div>`;
   }).join('');
 
-  const nameHtml = c.showName
-    ? `<div style="font-size:${c.nameFontSize}px;font-weight:900;letter-spacing:2px;text-transform:uppercase;font-family:'${c.fontStyle}',sans-serif;color:${c.textColor}">${(data.playerName||'PLAYER NAME').toUpperCase()}</div>` : '';
-
-  const eloAlign = c.flipLayout ? 'flex-start' : 'flex-end';
-  const eloLabelAlign = c.flipLayout ? 'left' : 'right';
+  const labelStyle = `font-size:9px;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;color:rgba(255,255,255,0.5);display:block;text-align:${eloLabelAlign};margin-bottom:1px;font-family:'Barlow',sans-serif`;
 
   const premierHtml = data.rating
-    ? `<div style="display:flex;flex-direction:column;align-items:${eloAlign}"><span style="font-size:9px;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;opacity:0.5;display:block;text-align:${eloLabelAlign};margin-bottom:1px;font-family:'Barlow',sans-serif">Premier</span><div style="font-size:${c.eloFontSize}px;font-weight:900;color:${premierColor};letter-spacing:1px;font-family:'${c.fontStyle}',sans-serif">${Number(data.rating).toLocaleString()}</div></div>` : '';
+    ? `<div style="display:flex;flex-direction:column;align-items:${eloAlign}"><span style="${labelStyle}">Premier</span><div style="font-size:${c.eloFontSize}px;font-weight:900;color:${premierColor};letter-spacing:1px;font-family:'${c.fontStyle}',sans-serif">${Number(data.rating).toLocaleString()}</div></div>` : '';
 
   const faceitHtml = data.faceitElo
-    ? `<div style="display:flex;flex-direction:column;align-items:${eloAlign}"><span style="font-size:9px;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;opacity:0.5;display:block;text-align:${eloLabelAlign};margin-bottom:1px;font-family:'Barlow',sans-serif">Faceit</span><div style="font-size:${c.eloFontSize}px;font-weight:900;color:${faceitColor};letter-spacing:1px;font-family:'${c.fontStyle}',sans-serif">${Number(data.faceitElo).toLocaleString()}</div></div>` : '';
+    ? `<div style="display:flex;flex-direction:column;align-items:${eloAlign}"><span style="${labelStyle}">Faceit</span><div style="font-size:${c.eloFontSize}px;font-weight:900;color:${faceitColor};letter-spacing:1px;font-family:'${c.fontStyle}',sans-serif">${Number(data.faceitElo).toLocaleString()}</div></div>` : '';
 
-  const dividerHtml = c.showDivider ? `<div style="height:1px;background:rgba(255,255,255,0.07);margin-bottom:10px"></div>` : `<div style="height:6px"></div>`;
-
-  const estimatedH = 14 + (c.showName ? c.nameFontSize + 14 : 0) + (c.showDivider ? 11 : 6) + badgePx + 12 + 16;
-
-  const badgesInlineHtml = `<div style="display:flex;gap:${c.badgeGap}px;align-items:center;flex:1">${badgesHtml}</div>`;
-
-  const eloBlock = `<div style="display:flex;align-items:center;gap:10px;flex-shrink:0">
-    <div style="display:flex;gap:14px;align-items:flex-end">${premierHtml}${faceitHtml}</div>
-    <div style="width:7px;height:7px;border-radius:50%;background:${liveData?'#5dde8b':'#444'};box-shadow:${liveData?'0 0 6px rgba(93,222,139,0.5)':'none'}"></div>
-  </div>`;
+  // No live dot
+  const eloBlock = `<div style="display:flex;align-items:center;flex-shrink:0"><div style="display:flex;gap:14px;align-items:flex-end">${premierHtml}${faceitHtml}</div></div>`;
 
   const attrHtml = `<div style="font-size:9px;color:rgba(255,255,255,0.2);letter-spacing:0.5px;text-transform:uppercase;margin-left:auto;font-family:'Barlow',sans-serif"><a href="https://leetify.com" style="color:${c.accentColor};text-decoration:none">Data by Leetify</a></div>`;
 
   let topRowContent, bottomRowHtml, dividerOut;
   if (!c.showName) {
-    topRowContent = c.flipLayout ? `${eloBlock}${badgesInlineHtml}` : `${badgesInlineHtml}${eloBlock}`;
-    bottomRowHtml = '';
+    const badgesInline = `<div style="display:flex;gap:${c.badgeGap}px;align-items:center;flex:1">${badgesHtml}</div>`;
+    topRowContent = topRowDir === 'row-reverse' ? `${eloBlock}${badgesInline}` : `${badgesInline}${eloBlock}`;
     dividerOut    = '';
+    bottomRowHtml = '';
   } else {
-    const nameHtml2 = `<div style="font-size:${c.nameFontSize}px;font-weight:900;letter-spacing:2px;text-transform:uppercase;font-family:'${c.fontStyle}',sans-serif;color:${c.textColor}">${(data.playerName||'PLAYER NAME').toUpperCase()}</div>`;
-    topRowContent = c.flipLayout ? `${eloBlock}${nameHtml2}` : `${nameHtml2}${eloBlock}`;
-    dividerOut    = c.showDivider ? `<div style="height:1px;background:rgba(255,255,255,0.07);margin-bottom:10px"></div>` : `<div style="height:6px"></div>`;
-    bottomRowHtml = `<div style="display:flex;flex-direction:${topRowDir};gap:${c.badgeGap}px;align-items:center;flex-wrap:nowrap">
-      <div style="display:flex;gap:${c.badgeGap}px;align-items:center">${badgesHtml}</div>
-      ${attrHtml}
-    </div>`;
+    const nameEl = `<div style="font-size:${c.nameFontSize}px;font-weight:900;letter-spacing:2px;text-transform:uppercase;font-family:'${c.fontStyle}',sans-serif;color:${c.textColor}">${(data.playerName||'PLAYER NAME').toUpperCase()}</div>`;
+    topRowContent = topRowDir === 'row-reverse' ? `${eloBlock}${nameEl}` : `${nameEl}${eloBlock}`;
+    dividerOut    = c.showDivider ? `<div style="height:1px;background:rgba(255,255,255,0.07);margin:0 0 10px"></div>` : `<div style="height:4px"></div>`;
+    bottomRowHtml = `<div style="display:flex;flex-direction:${topRowDir};gap:${c.badgeGap}px;align-items:center"><div style="display:flex;gap:${c.badgeGap}px;align-items:center">${badgesHtml}</div>${attrHtml}</div>`;
   }
 
-  const badgePx2 = BADGE_SIZES[c.badgeSize] || 30;
-  const estimatedH = c.showName
-    ? 14 + c.nameFontSize + 14 + (c.showDivider ? 11 : 6) + badgePx2 + 12 + 16
-    : badgePx2 + 28;
+  const topH     = c.showName ? Math.max(c.nameFontSize, c.eloFontSize + 13) : badgePx;
+  const middleH  = c.showName ? (c.showDivider ? 11 : 4) : 0;
+  const bottomH  = c.showName ? badgePx : 0;
+  const estimatedH = 26 + topH + middleH + bottomH;
 
   const html = `<!DOCTYPE html><html><head>
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;600&family=Rajdhani:wght@400;600;700&family=Oswald:wght@400;600;700&family=Bebas+Neue&family=Exo+2:wght@400;700;900&display=swap" rel="stylesheet">
     <style>*{margin:0;padding:0;box-sizing:border-box}body{background:transparent;overflow:hidden}</style>
     </head><body>
-    <div style="${borderStyle};background:${bg};border-radius:4px;padding:14px 18px 12px;box-shadow:0 8px 32px rgba(0,0,0,0.7);width:${c.widgetWidth}px;display:inline-block">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:${c.showName?'10':'0'}px">
+    <div style="${borderStyle};background:${bg};border-radius:4px;padding:14px 18px 12px;box-shadow:0 8px 32px rgba(0,0,0,0.7);width:${c.widgetWidth}px;display:inline-block;overflow:hidden">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px${c.showName?';margin-bottom:10px':''}">
         ${topRowContent}
-      </div>
-      ${dividerOut}
-      ${bottomRowHtml}
+      </div>${dividerOut}${bottomRowHtml}
     </div></body></html>`;
 
   const frame = document.getElementById('previewFrame');
   frame.style.width  = c.widgetWidth + 'px';
-  frame.style.height = (estimatedH + 10) + 'px';
+  frame.style.height = (estimatedH + 4) + 'px';
   const doc = frame.contentDocument || frame.contentWindow.document;
   doc.open(); doc.write(html); doc.close();
-
-  // Update OBS hints
   document.getElementById('obsWidth').textContent  = c.widgetWidth;
-  document.getElementById('obsHeight').textContent = estimatedH + 10;
+  document.getElementById('obsHeight').textContent = estimatedH + 4;
 }
+
 
 // ── Widget URL display ────────────────────────────────────────────────────────
 function setWidgetUrl() {
