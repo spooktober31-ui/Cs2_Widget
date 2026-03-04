@@ -90,6 +90,10 @@
 
   <div class="section-label">Display Options</div>
   <div class="toggle-row">
+    <div class="toggle-label">Flip Layout<small>ELO on the left, name/badges on the right</small></div>
+    <label class="toggle"><input type="checkbox" id="flipLayout" onchange="updatePreview()"><span class="slider"></span></label>
+  </div>
+  <div class="toggle-row">
     <div class="toggle-label">Show Player Name<small>When off, ELO moves up to fill the space</small></div>
     <label class="toggle"><input type="checkbox" id="showName" checked onchange="updatePreview()"><span class="slider"></span></label>
   </div>
@@ -184,17 +188,18 @@ function v(id) { return document.getElementById(id); }
 
 function getConfig() {
   return {
-    accentColor: v('accentColor').value,
-    bgColor:     v('bgColor').value,
-    bgOpacity:   parseInt(v('bgOpacity').value) / 100,
-    showBorder:  v('showBorder').checked,
-    showName:    v('showName').checked,
-    showPlatform:v('showPlatform').checked,
-    tierColors:  v('tierColors').checked,
-    fontStyle:   v('fontStyle').value,
-    fontSize:    v('fontSize').value,
-    widgetWidth: parseInt(v('widgetWidth').value) || 420,
-    matchCount:  parseInt(v('matchCount').value) || 8,
+    accentColor:  v('accentColor').value,
+    bgColor:      v('bgColor').value,
+    bgOpacity:    parseInt(v('bgOpacity').value) / 100,
+    showBorder:   v('showBorder').checked,
+    showName:     v('showName').checked,
+    showPlatform: v('showPlatform').checked,
+    tierColors:   v('tierColors').checked,
+    flipLayout:   v('flipLayout') ? v('flipLayout').checked : false,
+    fontStyle:    v('fontStyle').value,
+    fontSize:     v('fontSize').value,
+    widgetWidth:  parseInt(v('widgetWidth').value) || 420,
+    matchCount:   parseInt(v('matchCount').value) || 8,
   };
 }
 
@@ -225,11 +230,12 @@ function hexToRgb(hex) {
 
 function updatePreview() {
   const c = getConfig();
-  const scale   = c.fontSize === 'small' ? 0.85 : c.fontSize === 'large' ? 1.18 : 1;
-  const namePx  = Math.round(22 * scale);
-  const eloPx   = Math.round(20 * scale);
-  const badgePx = Math.round(30 * scale);
-  const badgeFPx= Math.round(15 * scale);
+  const scale    = c.fontSize === 'small' ? 0.85 : c.fontSize === 'large' ? 1.18 : 1;
+  const namePx   = Math.round(22 * scale);
+  const eloPx    = Math.round(20 * scale);
+  const badgePx  = Math.round(30 * scale);
+  const badgeFPx = Math.round(15 * scale);
+  const gap      = 4;
 
   const rgb = hexToRgb(c.bgColor);
   const bg  = `linear-gradient(135deg,rgba(${rgb},${c.bgOpacity}) 0%,rgba(${rgb},${Math.min(c.bgOpacity+0.04,1)}) 100%)`;
@@ -253,8 +259,14 @@ function updatePreview() {
   };
 
   const matches = data.matches.slice(0, c.matchCount);
-  const premierColor = data.rating   ? getPremierColor(Number(data.rating),   c.tierColors, c.accentColor) : '#aaaaaa';
-  const faceitColor  = data.faceitElo? getFaceitColor(Number(data.faceitElo), c.tierColors)                : '#FF5500';
+
+  // Fix: when tier colors off, both ELOs use accent color
+  const premierColor = data.rating    ? getPremierColor(Number(data.rating),   c.tierColors, c.accentColor) : c.accentColor;
+  const faceitColor  = data.faceitElo ? getFaceitColor(Number(data.faceitElo), c.tierColors, c.accentColor) : c.accentColor;
+
+  const eloAlign      = c.flipLayout ? 'flex-start' : 'flex-end';
+  const eloLabelAlign = c.flipLayout ? 'left'       : 'right';
+  const topRowDir     = c.flipLayout ? 'row-reverse': 'row';
 
   const badgeStyles = {
     W:`background:linear-gradient(135deg,#1a4d2e,#2d7a4a);color:#5dde8b;border:1px solid rgba(93,222,139,0.25);box-shadow:0 0 8px rgba(93,222,139,0.15)`,
@@ -264,43 +276,67 @@ function updatePreview() {
   };
 
   const badgesHtml = matches.map(m => {
-    const cls = ['W','L','D'].includes(m.result) ? m.result : 'unknown';
+    const cls      = ['W','L','D'].includes(m.result) ? m.result : 'unknown';
     const isFaceit = m.platform === 'faceit';
     const sym = c.showPlatform ? (isFaceit
-      ? `<span style="position:absolute;bottom:-4px;right:-4px;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 56 56" width="10" height="10" xmlns="http://www.w3.org/2000/svg"><polygon points="4,20 32,4 52,28 32,52 26,34 12,40" fill="#FF5500"/></svg></span>`
-      : `<span style="position:absolute;bottom:-4px;right:-4px;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 40 44" width="10" height="10" xmlns="http://www.w3.org/2000/svg"><g transform="rotate(-8,20,22)"><rect x="6" y="2" width="28" height="36" rx="2" fill="#4B6FD4"/><rect x="2" y="2" width="5" height="36" rx="1" fill="#F5C518"/><g fill="white" transform="translate(12,6)"><rect x="4" y="0" width="9" height="2.5"/><rect x="1" y="3" width="2.5" height="10"/><rect x="4" y="3" width="6" height="2.5"/><rect x="11" y="3" width="5" height="10"/><rect x="4" y="12" width="7" height="3.5"/></g></g></svg></span>`) : '';
+      ? `<span style="position:absolute;bottom:-4px;right:-4px;display:flex"><svg viewBox="0 0 56 56" width="10" height="10" xmlns="http://www.w3.org/2000/svg"><polygon points="4,20 32,4 52,28 32,52 26,34 12,40" fill="#FF5500"/></svg></span>`
+      : `<span style="position:absolute;bottom:-4px;right:-4px;display:flex"><svg viewBox="0 0 40 44" width="10" height="10" xmlns="http://www.w3.org/2000/svg"><g transform="rotate(-8,20,22)"><rect x="6" y="2" width="28" height="36" rx="2" fill="#4B6FD4"/><rect x="2" y="2" width="5" height="36" rx="1" fill="#F5C518"/><g fill="white" transform="translate(12,6)"><rect x="4" y="0" width="9" height="2.5"/><rect x="1" y="3" width="2.5" height="10"/><rect x="4" y="3" width="6" height="2.5"/><rect x="11" y="3" width="5" height="10"/><rect x="4" y="12" width="7" height="3.5"/></g></g></svg></span>`) : '';
     return `<div style="width:${badgePx}px;height:${badgePx}px;border-radius:3px;font-size:${badgeFPx}px;font-weight:900;display:flex;align-items:center;justify-content:center;position:relative;${badgeStyles[cls]};font-family:'${c.fontStyle}',sans-serif">${m.result}${sym}</div>`;
   }).join('');
 
-  const nameHtml = c.showName
-    ? `<div style="font-size:${namePx}px;font-weight:900;color:${c.accentColor};letter-spacing:2px;text-transform:uppercase;font-family:'${c.fontStyle}',sans-serif">${(data.playerName||'PLAYER NAME').toUpperCase()}</div>`
-    : '';
+  // Name html (shown mode)
+  const nameHtml = `<div style="font-size:${namePx}px;font-weight:900;color:#ffffff;letter-spacing:2px;text-transform:uppercase;font-family:'${c.fontStyle}',sans-serif">${(data.playerName||'PLAYER NAME').toUpperCase()}</div>`;
 
   const premierHtml = data.rating
-    ? `<div style="display:flex;flex-direction:column;align-items:flex-end"><span style="font-size:9px;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;opacity:0.5;display:block;text-align:right;margin-bottom:1px;font-family:'Barlow',sans-serif">Premier</span><div style="font-size:${eloPx}px;font-weight:900;color:${premierColor};letter-spacing:1px;font-family:'${c.fontStyle}',sans-serif">${Number(data.rating).toLocaleString()}</div></div>` : '';
+    ? `<div style="display:flex;flex-direction:column;align-items:${eloAlign}"><span style="font-size:9px;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;opacity:0.5;display:block;text-align:${eloLabelAlign};margin-bottom:1px;font-family:'Barlow',sans-serif">Premier</span><div style="font-size:${eloPx}px;font-weight:900;color:${premierColor};letter-spacing:1px;font-family:'${c.fontStyle}',sans-serif">${Number(data.rating).toLocaleString()}</div></div>` : '';
 
   const faceitHtml = data.faceitElo
-    ? `<div style="display:flex;flex-direction:column;align-items:flex-end"><span style="font-size:9px;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;opacity:0.5;display:block;text-align:right;margin-bottom:1px;font-family:'Barlow',sans-serif">Faceit</span><div style="font-size:${eloPx}px;font-weight:900;color:${faceitColor};letter-spacing:1px;font-family:'${c.fontStyle}',sans-serif">${Number(data.faceitElo).toLocaleString()}</div></div>` : '';
+    ? `<div style="display:flex;flex-direction:column;align-items:${eloAlign}"><span style="font-size:9px;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;opacity:0.5;display:block;text-align:${eloLabelAlign};margin-bottom:1px;font-family:'Barlow',sans-serif">Faceit</span><div style="font-size:${eloPx}px;font-weight:900;color:${faceitColor};letter-spacing:1px;font-family:'${c.fontStyle}',sans-serif">${Number(data.faceitElo).toLocaleString()}</div></div>` : '';
 
-  const frameH = c.fontSize === 'large' ? 145 : c.fontSize === 'small' ? 115 : 130;
+  const eloBlock = `<div style="display:flex;align-items:center;gap:10px;flex-shrink:0">
+    <div style="display:flex;gap:14px;align-items:flex-end">${premierHtml}${faceitHtml}</div>
+    <div style="width:7px;height:7px;border-radius:50%;background:${liveData?'#5dde8b':'#555'};box-shadow:${liveData?'0 0 6px rgba(93,222,139,0.5)':'none'}"></div>
+  </div>`;
+
+  const attrHtml = `<div style="font-size:9px;color:rgba(255,255,255,0.2);letter-spacing:0.5px;text-transform:uppercase;margin-left:auto;font-family:'Barlow',sans-serif"><a href="https://leetify.com" style="color:${c.accentColor};text-decoration:none">Data by Leetify</a></div>`;
+
+  // No-name mode: badges inline with ELO, no bottom row, no divider
+  // Name mode: name top-left, ELO top-right, divider, badges bottom
+  let topRowContent, bottomRowHtml, dividerHtml;
+
+  if (!c.showName) {
+    const badgesInlineHtml = `<div style="display:flex;gap:${gap}px;align-items:center;flex:1">${badgesHtml}</div>`;
+    topRowContent  = c.flipLayout
+      ? `${eloBlock}${badgesInlineHtml}`
+      : `${badgesInlineHtml}${eloBlock}`;
+    bottomRowHtml  = '';
+    dividerHtml    = '';
+  } else {
+    topRowContent  = c.flipLayout
+      ? `${eloBlock}${nameHtml}`
+      : `${nameHtml}${eloBlock}`;
+    dividerHtml    = `<div style="height:1px;background:rgba(255,255,255,0.07);margin-bottom:10px"></div>`;
+    bottomRowHtml  = `<div style="display:flex;flex-direction:${topRowDir};gap:${gap}px;align-items:center;flex-wrap:nowrap">
+      <div style="display:flex;gap:${gap}px;align-items:center">${badgesHtml}</div>
+      ${attrHtml}
+    </div>`;
+  }
+
+  // Height: name mode ~130px, no-name mode = just badge height + padding
+  const frameH = c.showName
+    ? (c.fontSize === 'large' ? 145 : c.fontSize === 'small' ? 115 : 130)
+    : badgePx + 30;
 
   const html = `<!DOCTYPE html><html><head>
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;600&family=Rajdhani:wght@400;600;700&family=Oswald:wght@400;600;700&family=Bebas+Neue&family=Exo+2:wght@400;700;900&display=swap" rel="stylesheet">
     <style>*{margin:0;padding:0;box-sizing:border-box}body{background:transparent;overflow:hidden}</style>
     </head><body>
-    <div style="border-radius:4px;padding:14px 18px 12px;position:relative;box-shadow:0 8px 32px rgba(0,0,0,0.7);${borderStyle};background:${bg};width:${c.widgetWidth}px">
-      <div style="display:flex;align-items:center;justify-content:${c.showName?'space-between':'flex-end'};margin-bottom:10px">
-        ${nameHtml}
-        <div style="display:flex;align-items:center;gap:10px">
-          <div style="display:flex;gap:14px;align-items:flex-end">${premierHtml}${faceitHtml}</div>
-          <div style="width:7px;height:7px;border-radius:50%;background:${liveData?'#5dde8b':'#555'};box-shadow:${liveData?'0 0 6px rgba(93,222,139,0.5)':'none'}"></div>
-        </div>
+    <div style="${borderStyle};background:${bg};border-radius:4px;padding:14px 18px 12px;box-shadow:0 8px 32px rgba(0,0,0,0.7);width:${c.widgetWidth}px;display:inline-block">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:${c.showName?'10':'0'}px;gap:10px">
+        ${topRowContent}
       </div>
-      <div style="height:1px;background:rgba(255,255,255,0.07);margin-bottom:10px"></div>
-      <div style="display:flex;flex-direction:row;gap:4px;align-items:center;flex-wrap:nowrap">
-        <div style="display:flex;gap:4px;align-items:center">${badgesHtml}</div>
-        <div style="font-size:9px;color:rgba(255,255,255,0.2);letter-spacing:0.5px;text-transform:uppercase;margin-left:auto;font-family:'Barlow',sans-serif"><a href="https://leetify.com" style="color:${c.accentColor};text-decoration:none">Data by Leetify</a></div>
-      </div>
+      ${dividerHtml}
+      ${bottomRowHtml}
     </div></body></html>`;
 
   const frame = v('previewFrame');
@@ -400,6 +436,7 @@ async function generate() {
   btn.disabled = true;
 
   const settings = {
+    flipLayout:   v('flipLayout') ? v('flipLayout').checked : false,
     showName:     v('showName').checked,
     showPlatform: v('showPlatform').checked,
     showBorder:   v('showBorder').checked,
@@ -412,13 +449,12 @@ async function generate() {
     bgColor:      v('bgColor').value,
     accentColor:  v('accentColor').value,
     showDivider:  true,
-    tierColors:   v('tierColors').checked,
     badgeSize:    'normal',
     badgeGap:     4,
     nameFontSize: 22,
     eloFontSize:  20,
     textColor:    '#ffffff',
-    showScore:    true,
+    showScore:    false,
   };
 
   try {

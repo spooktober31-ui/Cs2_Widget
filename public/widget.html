@@ -106,7 +106,7 @@ function hexToRgb(hex) {
 }
 
 function getPremierColor(r) {
-  if (!S.tierColors) return S.accentColor;
+  if (!S.tierColors) return S.accentColor || '#e4a630';
   if (r >= 30000) return '#e4a630';
   if (r >= 25000) return '#e03030';
   if (r >= 20000) return '#e0308a';
@@ -117,7 +117,7 @@ function getPremierColor(r) {
 }
 
 function getFaceitColor(e) {
-  if (!S.tierColors) return '#FF5500';
+  if (!S.tierColors) return S.accentColor || '#e4a630';
   if (e >= 2001) return '#e03030';
   if (e >= 1751) return '#e06020';
   if (e >= 1531) return '#e07820';

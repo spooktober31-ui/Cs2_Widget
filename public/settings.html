@@ -109,10 +109,6 @@
     <div class="toggle-label">Tier Colors on ELO<small>Color-coded by rank bracket</small></div>
     <label class="toggle"><input type="checkbox" id="tierColors" onchange="updatePreview()"><span class="slider"></span></label>
   </div>
-  <div class="toggle-row">
-    <div class="toggle-label">Show Score on Tooltip<small>Hover badges to see score + map</small></div>
-    <label class="toggle"><input type="checkbox" id="showScore" onchange="updatePreview()"><span class="slider"></span></label>
-  </div>
 
   <!-- SIZE -->
   <div class="section-label">Size & Layout</div>
@@ -270,7 +266,6 @@ function applySettingsToForm(s) {
   setChk('showBorder',   s.showBorder   !== false);
   setChk('showDivider',  s.showDivider  !== false);
   setChk('tierColors',   s.tierColors   !== false);
-  setChk('showScore',    s.showScore    !== false);
 
   set('widgetWidth',  s.widgetWidth  || 420);
   set('matchCount',   s.matchCount   || 8);
@@ -300,7 +295,6 @@ function getFormSettings() {
     showBorder:   document.getElementById('showBorder').checked,
     showDivider:  document.getElementById('showDivider').checked,
     tierColors:   document.getElementById('tierColors').checked,
-    showScore:    document.getElementById('showScore').checked,
     widgetWidth:  parseInt(document.getElementById('widgetWidth').value) || 420,
     matchCount:   parseInt(document.getElementById('matchCount').value) || 8,
     badgeSize:    document.getElementById('badgeSize').value,
@@ -359,8 +353,8 @@ function getPremierColor(r, tierColors, accent) {
   if (r >=  5000) return '#60b8e0';
   return '#aaaaaa';
 }
-function getFaceitColor(e, tierColors) {
-  if (!tierColors) return '#FF5500';
+function getFaceitColor(e, tierColors, accent) {
+  if (!tierColors) return accent;
   if (e >= 2001) return '#e03030';
   if (e >= 1751) return '#e06020';
   if (e >= 1531) return '#e07820';
@@ -399,8 +393,8 @@ function updatePreview() {
   };
 
   const matches = (data.matches || []).slice(0, c.matchCount);
-  const premierColor = data.rating    ? getPremierColor(Number(data.rating),   c.tierColors, c.accentColor) : '#aaa';
-  const faceitColor  = data.faceitElo ? getFaceitColor(Number(data.faceitElo), c.tierColors)                : '#FF5500';
+  const premierColor = data.rating    ? getPremierColor(Number(data.rating),   c.tierColors, c.accentColor) : c.accentColor;
+  const faceitColor  = data.faceitElo ? getFaceitColor(Number(data.faceitElo), c.tierColors, c.accentColor) : c.accentColor;
 
   const badgeStyles = {
     W: `background:linear-gradient(135deg,#1a4d2e,#2d7a4a);color:#5dde8b;border:1px solid rgba(93,222,139,0.25);box-shadow:0 0 8px rgba(93,222,139,0.15)`,
@@ -434,29 +428,45 @@ function updatePreview() {
 
   const estimatedH = 14 + (c.showName ? c.nameFontSize + 14 : 0) + (c.showDivider ? 11 : 6) + badgePx + 12 + 16;
 
-  const badgesHtml_inline = `<div style="display:flex;gap:${c.badgeGap}px;align-items:center">${badgesHtml}</div>`;
-  const badgesHtml_row    = badgesHtml;
+  const badgesInlineHtml = `<div style="display:flex;gap:${c.badgeGap}px;align-items:center;flex:1">${badgesHtml}</div>`;
 
-  const topRowDir     = c.flipLayout ? 'row-reverse' : 'row';
-  const resultsRowDir = c.flipLayout ? 'row-reverse' : 'row';
+  const eloBlock = `<div style="display:flex;align-items:center;gap:10px;flex-shrink:0">
+    <div style="display:flex;gap:14px;align-items:flex-end">${premierHtml}${faceitHtml}</div>
+    <div style="width:7px;height:7px;border-radius:50%;background:${liveData?'#5dde8b':'#444'};box-shadow:${liveData?'0 0 6px rgba(93,222,139,0.5)':'none'}"></div>
+  </div>`;
+
+  const attrHtml = `<div style="font-size:9px;color:rgba(255,255,255,0.2);letter-spacing:0.5px;text-transform:uppercase;margin-left:auto;font-family:'Barlow',sans-serif"><a href="https://leetify.com" style="color:${c.accentColor};text-decoration:none">Data by Leetify</a></div>`;
+
+  let topRowContent, bottomRowHtml, dividerOut;
+  if (!c.showName) {
+    topRowContent = c.flipLayout ? `${eloBlock}${badgesInlineHtml}` : `${badgesInlineHtml}${eloBlock}`;
+    bottomRowHtml = '';
+    dividerOut    = '';
+  } else {
+    const nameHtml2 = `<div style="font-size:${c.nameFontSize}px;font-weight:900;letter-spacing:2px;text-transform:uppercase;font-family:'${c.fontStyle}',sans-serif;color:${c.textColor}">${(data.playerName||'PLAYER NAME').toUpperCase()}</div>`;
+    topRowContent = c.flipLayout ? `${eloBlock}${nameHtml2}` : `${nameHtml2}${eloBlock}`;
+    dividerOut    = c.showDivider ? `<div style="height:1px;background:rgba(255,255,255,0.07);margin-bottom:10px"></div>` : `<div style="height:6px"></div>`;
+    bottomRowHtml = `<div style="display:flex;flex-direction:${topRowDir};gap:${c.badgeGap}px;align-items:center;flex-wrap:nowrap">
+      <div style="display:flex;gap:${c.badgeGap}px;align-items:center">${badgesHtml}</div>
+      ${attrHtml}
+    </div>`;
+  }
+
+  const badgePx2 = BADGE_SIZES[c.badgeSize] || 30;
+  const estimatedH = c.showName
+    ? 14 + c.nameFontSize + 14 + (c.showDivider ? 11 : 6) + badgePx2 + 12 + 16
+    : badgePx2 + 28;
 
   const html = `<!DOCTYPE html><html><head>
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;600&family=Rajdhani:wght@400;600;700&family=Oswald:wght@400;600;700&family=Bebas+Neue&family=Exo+2:wght@400;700;900&display=swap" rel="stylesheet">
     <style>*{margin:0;padding:0;box-sizing:border-box}body{background:transparent;overflow:hidden}</style>
     </head><body>
-    <div style="${borderStyle};background:${bg};border-radius:4px;padding:14px 18px 12px;box-shadow:0 8px 32px rgba(0,0,0,0.7);width:${c.widgetWidth}px">
-      <div style="display:flex;align-items:center;flex-direction:${topRowDir};justify-content:space-between;margin-bottom:10px">
-        ${c.showName ? nameHtml : badgesHtml_inline}
-        <div style="display:flex;align-items:center;gap:10px">
-          <div style="display:flex;gap:14px;align-items:flex-end">${premierHtml}${faceitHtml}</div>
-          <div style="width:7px;height:7px;border-radius:50%;background:${liveData?'#5dde8b':'#444'};box-shadow:${liveData?'0 0 6px rgba(93,222,139,0.5)':'none'}"></div>
-        </div>
+    <div style="${borderStyle};background:${bg};border-radius:4px;padding:14px 18px 12px;box-shadow:0 8px 32px rgba(0,0,0,0.7);width:${c.widgetWidth}px;display:inline-block">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:${c.showName?'10':'0'}px">
+        ${topRowContent}
       </div>
-      ${c.showName ? dividerHtml : ''}
-      ${c.showName ? `<div style="display:flex;flex-direction:${resultsRowDir};gap:${c.badgeGap}px;align-items:center;flex-wrap:nowrap">
-        ${badgesHtml_row}
-        <div style="font-size:9px;color:rgba(255,255,255,0.2);letter-spacing:0.5px;text-transform:uppercase;margin-left:auto;font-family:'Barlow',sans-serif"><a href="https://leetify.com" style="color:${c.accentColor};text-decoration:none">Data by Leetify</a></div>
-      </div>` : ''}
+      ${dividerOut}
+      ${bottomRowHtml}
     </div></body></html>`;
 
   const frame = document.getElementById('previewFrame');

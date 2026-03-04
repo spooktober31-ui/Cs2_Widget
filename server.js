@@ -62,7 +62,7 @@ function defaultSettings() {
     accentColor:  '#e4a630',
     textColor:    '#ffffff',
     badgeSize:    'normal',
-    showScore:    true,
+    showScore:    false,
     showMap:      true,
     showDivider:  true,
     flipLayout:   false,
