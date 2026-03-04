@@ -410,8 +410,8 @@ function updatePreview() {
     const cls      = ['W','L','D'].includes(m.result) ? m.result : 'unknown';
     const isFaceit = m.platform === 'faceit';
     const sym = c.showPlatform ? (isFaceit
-      ? `<span style="position:absolute;bottom:-4px;right:-4px;display:flex"><svg viewBox="0 0 56 56" width="10" height="10" xmlns="http://www.w3.org/2000/svg"><polygon points="4,20 32,4 52,28 32,52 26,34 12,40" fill="#FF5500"/></svg></span>`
-      : `<span style="position:absolute;bottom:-4px;right:-4px;display:flex"><svg viewBox="0 0 40 44" width="10" height="10" xmlns="http://www.w3.org/2000/svg"><g transform="rotate(-8,20,22)"><rect x="6" y="2" width="28" height="36" rx="2" fill="#4B6FD4"/><rect x="2" y="2" width="5" height="36" rx="1" fill="#F5C518"/><g fill="white" transform="translate(12,6)"><rect x="4" y="0" width="9" height="2.5"/><rect x="1" y="3" width="2.5" height="10"/><rect x="4" y="3" width="6" height="2.5"/><rect x="11" y="3" width="5" height="10"/><rect x="4" y="12" width="7" height="3.5"/></g></g></svg></span>`) : '';
+      ? `<span style="position:absolute;bottom:2px;right:2px;display:flex"><svg viewBox="0 0 56 56" width="10" height="10" xmlns="http://www.w3.org/2000/svg"><polygon points="4,20 32,4 52,28 32,52 26,34 12,40" fill="#FF5500"/></svg></span>`
+      : `<span style="position:absolute;bottom:2px;right:2px;display:flex"><svg viewBox="0 0 40 44" width="10" height="10" xmlns="http://www.w3.org/2000/svg"><g transform="rotate(-8,20,22)"><rect x="6" y="2" width="28" height="36" rx="2" fill="#4B6FD4"/><rect x="2" y="2" width="5" height="36" rx="1" fill="#F5C518"/><g fill="white" transform="translate(12,6)"><rect x="4" y="0" width="9" height="2.5"/><rect x="1" y="3" width="2.5" height="10"/><rect x="4" y="3" width="6" height="2.5"/><rect x="11" y="3" width="5" height="10"/><rect x="4" y="12" width="7" height="3.5"/></g></g></svg></span>`) : '';
     return `<div style="width:${badgePx}px;height:${badgePx}px;border-radius:3px;font-size:${badgeFPx}px;font-weight:900;display:flex;align-items:center;justify-content:center;position:relative;${badgeStyles[cls]};font-family:'${c.fontStyle}',sans-serif">${m.result}${sym}</div>`;
   }).join('');
 
@@ -450,7 +450,7 @@ function updatePreview() {
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;600&family=Rajdhani:wght@400;600;700&family=Oswald:wght@400;600;700&family=Bebas+Neue&family=Exo+2:wght@400;700;900&display=swap" rel="stylesheet">
     <style>*{margin:0;padding:0;box-sizing:border-box}body{background:transparent;overflow:hidden}</style>
     </head><body>
-    <div style="${borderStyle};background:${bg};border-radius:4px;padding:14px 18px ${!c.showName?"18px":"12px"};box-shadow:0 4px 16px rgba(0,0,0,0.5);width:${c.widgetWidth}px;display:inline-block">
+    <div style="${borderStyle};background:${bg};border-radius:4px;padding:14px 18px 12px;width:${c.widgetWidth}px;display:inline-block">
       <div style="display:flex;align-items:center;justify-content:space-between;gap:10px${c.showName?';margin-bottom:10px':''}">
         ${topRowContent}
       </div>${dividerOut}${bottomRowHtml}

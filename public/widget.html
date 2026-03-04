@@ -16,7 +16,6 @@
     border-left: 1px solid rgba(255,255,255,0.12);
     border-right: 1px solid rgba(255,255,255,0.12);
     border-bottom: 1px solid rgba(255,255,255,0.12);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.5);
   }
   .widget::before {
     content: '';
@@ -57,7 +56,7 @@
     padding:4px 8px; border-radius:3px; white-space:nowrap; pointer-events:none; z-index:10; letter-spacing:0.5px;
   }
 
-  .badge .platform-sym { position:absolute; bottom:-4px; right:-4px; display:flex; align-items:center; justify-content:center; pointer-events:none; }
+  .badge .platform-sym { position:absolute; bottom:2px; right:2px; display:flex; align-items:center; justify-content:center; pointer-events:none; }
   .badge .platform-sym svg { width:10px; height:10px; }
 
   .no-data { color:rgba(255,255,255,0.2); font-size:13px; font-style:italic; letter-spacing:0.5px; }
@@ -168,7 +167,7 @@ function applyLayout() {
     resultsRow.style.display   = 'none';
     badgesInline.style.display = 'flex';
     divider.style.display      = 'none';
-    widget.style.paddingBottom = '18px'; // extra room for platform symbol overhang
+    widget.style.paddingBottom = '12px';
     document.getElementById('top-row').style.justifyContent = 'space-between';
   } else {
     nameEl.style.display       = '';
