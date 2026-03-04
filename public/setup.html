@@ -67,11 +67,11 @@
 
   <div class="section-label">Leetify / Steam — Required</div>
   <div class="field">
-    <label>Steam64 ID <span class="req">*</span><a class="help-link" href="https://www.steamidfinder.com/" target="_blank">↗ How to find yours</a></label>
+    <label>Steam64 ID <span class="req">*</span><a class="help-link" href="https://steamdb.info/calculator/" target="_blank">↗ Find your Steam ID</a></label>
     <input type="text" id="steamId" placeholder="e.g. 76561198XXXXXXXXX" autocomplete="off" oninput="updatePreview()">
   </div>
   <div class="field">
-    <label>Leetify API Key <span class="req">*</span><a class="help-link" href="https://leetify.com/app/settings/api" target="_blank">↗ Leetify Settings → API</a></label>
+    <label>Leetify API Key <span class="req">*</span><a class="help-link" href="https://leetify.com/app/developer" target="_blank">↗ Leetify → Developer</a></label>
     <input type="password" id="leetifyKey" placeholder="Your Leetify API key" autocomplete="off" oninput="updatePreview()">
   </div>
   <div class="field">
@@ -85,7 +85,7 @@
     <input type="text" id="faceitUsername" placeholder="Your Faceit username" autocomplete="off" oninput="updatePreview()">
   </div>
   <div class="field">
-    <label>Faceit API Key <span class="opt">(optional)</span><a class="help-link" href="https://developers.faceit.com/apps" target="_blank">↗ Faceit Developers → Apps</a></label>
+    <label>Faceit API Key <span class="opt">(optional)</span><a class="help-link" href="https://developers.faceit.com/" target="_blank">↗ Faceit Developers</a></label>
     <input type="password" id="faceitKey" placeholder="Your Faceit API key" autocomplete="off" oninput="updatePreview()">
   </div>
 
@@ -297,6 +297,10 @@ function updatePreview() {
       {result:'L',score:'10:13',map:'OVERPASS',platform:'leetify'},
       {result:'W',score:'13:7', map:'VERTIGO', platform:'leetify'},
       {result:'W',score:'13:9', map:'CACHE',   platform:'leetify'},
+      {result:'L',score:'7:13', map:'MIRAGE',  platform:'leetify'},
+      {result:'W',score:'13:4', map:'INFERNO', platform:'leetify'},
+      {result:'W',score:'13:6', map:'DUST2',   platform:'leetify'},
+      {result:'L',score:'9:13', map:'NUKE',    platform:'leetify'},
     ]
   };
 
